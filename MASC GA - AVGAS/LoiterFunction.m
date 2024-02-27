@@ -12,8 +12,7 @@ function output = LoiterFunction(inputs,Wi)
 
 %% Inputs for loiter fuel computations
 time   = inputs.MissionInputs.loiter_time;           % Loiter time [hours]
-eta_p  = inputs.PropulsionInputs.eta_p;              % propeller efficiency
-c_bhp  = inputs.PropulsionInputs.c_bhp;              % Propeller specific fuel consumption [lb/hr]
+C  = inputs.PropulsionInputs.C;              % Propeller specific fuel consumption [lb/hr]
 %%
 %% Parasite drag computation
  inputs.Aero.Cdo = ParasiteDragFunction(inputs); % Parasite Drag Coefficient, Cdo
@@ -29,7 +28,7 @@ c_bhp  = inputs.PropulsionInputs.c_bhp;              % Propeller specific fuel c
   [Cdi,CL]    = InducedDragFunction(inputs,Wi);  % induced drag and lift coefficients 
   CD          = inputs.Aero.Cdo + Cdi;           % total drag coefficient
   LDrat       = CL/CD;                           % lift-to-drag ratio during cruise
-  fl          = exp(-time*(inputs.Aero.V*0.7)*(c_bhp+0.05)/(325.9*LDrat*(eta_p-0.05)));              % loiter fuel weight fraction
+  fl          = exp(-time*C*/LDrat);              % loiter fuel weight fraction
   Wf          = Wi*fl;                           % final aircraft weight after loiter segment
   output.f_lt = Wf/Wi;                           % loiter fuel-weight ratio (for entire segment)
   output.fuel = Wi-Wf;                           % total loiter fuel [lbs]
