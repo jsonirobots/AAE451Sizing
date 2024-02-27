@@ -12,8 +12,7 @@ function output = CruiseFunction(inputs,Wo)
 
 %% Inputs for cruise fuel computations
 Range  = inputs.MissionInputs.R;                    % aircraft design range [nmi]
-eta_p  = inputs.PropulsionInputs.eta_p;             % propeller efficiency
-c_bhp  = inputs.PropulsionInputs.c_bhp;             % specific fuel consumption [lb/hr]
+C  = inputs.PropulsionInputs.C;             % specific fuel consumption [1/hr]
 %%
 %% Parasite drag computation
  inputs.Aero.Cdo = ParasiteDragFunction(inputs);    % Parasite Drag Coefficient, Cdo
@@ -35,7 +34,7 @@ c_bhp  = inputs.PropulsionInputs.c_bhp;             % specific fuel consumption 
       [Cdi,CL]    = InducedDragFunction(inputs,Wi); % induced drag and lift coefficients 
       CD          = inputs.Aero.Cdo + Cdi;          % total drag coefficient
       LDrat       = CL/CD;                          % lift-to-drag ratio during segment
-      fc          = exp(-Range_seg*c_bhp/(LDrat*eta_p*325.9));    % cruise fuel fraction 
+      fc          = exp(-Range_seg*C/(LDrat*V));    % cruise fuel fraction 
       Wf          = Wi*fc;                          % final aircraft weight after cruise [lbs]
   end
   output.f_cr     = Wf/Wo;                          % cruise fuel-weight ratio (for entire mission)
