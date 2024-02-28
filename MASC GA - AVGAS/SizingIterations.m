@@ -23,7 +23,7 @@ tolerance = 0.1;         % sizing tolerance [lbs]
 diff      = tolerance+1; % initial tolerance gap [lbs]
 
 while diff > tolerance
-   inputs.Sizing.Power     = TOGW_temp*inputs.PerformanceInputs.PW; % compute total power (based on P/W)
+   inputs.Sizing.Thrust    = TOGW_temp*inputs.PerformanceInputs.TW; % compute total power (based on P/W)
    inputs.Sizing.TOGW_temp = TOGW_temp;                             % store initial gross weight
    W0                      = TOGW_temp;                             % initial gross weight for current iteration
    inputs.Sizing.W0        = W0;
@@ -86,5 +86,5 @@ FinalOutput             = inputs;
 FinalOutput.EmptyWeight = EmptyWeightOutput;
 FinalOutput.TOGW        = TOGW;
 FinalOutput.Wfuel       = Wfuel;
-FinalOutput.Power       = inputs.Sizing.Power;
+FinalOutput.Thrust      = inputs.Sizing.Thrust;
 end
