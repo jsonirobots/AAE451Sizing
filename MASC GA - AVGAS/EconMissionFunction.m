@@ -5,7 +5,7 @@
 % The economic mission is assumed to be:
 %
 %              ______cruise_____
-%             /                 \ descend
+%             /                 \ descent
 %            /                   \___
 %           /climb                \_/ loiter
 %          /                        \ 
@@ -39,19 +39,23 @@ while diff > tolerance
   CruiseOutput        = CruiseFunction(inputs,W2);
   f_cr                = CruiseOutput.f_cr;          % cruise fuel weight fraction
   W3                  = W2*f_cr;                    % aircraft weight after cruise segment [lbs]
+% Descent segment fuel weight fraction
+  DescentOutput       = DescentFunction(inputs);
+  f_dec               = DescentOutput.f_dec;              % descent fuel weight segment
+  W4                  = W3*f_dec;                         % aircraft weight after descent segment [lbs]
 % Loiter segment fuel weight fraction
-  LoiterOutput        = LoiterFunction(inputs,W3);
-  f_lt                = LoiterOutput.f_lt;          % loiter fuel weight segment
-  W4                  = W3*f_lt;                    % aircraft weight after loiter segment [lbs]
+  LoiterOutput        = LoiterFunction(inputs,W4);
+  f_lt                = LoiterOutput.f_lt;                % loiter fuel weight segment
+  W5                  = W4*f_lt;                          % aircraft weight after loiter segment [lbs]
 % Landing and taxi fuel weight fraction
   LandingTaxiOutput   = LandingTaxiFunction(inputs);
-  f_lnd               = LandingTaxiOutput.f_lnd;    % landing and taxi fuel weight segment
-  W5                  = W4*f_lnd;                   % aircraft weight after landing & taxi segment [lbs]
+  f_lnd               = LandingTaxiOutput.f_lnd;          % landing and taxi fuel weight segment
+  W6                  = W5*f_lnd;                         % aircraft weight after landing & taxi segment [lbs]
 
 %% Compute new weights based on results of current iteration  
 % Total fuel weight fraction (including trapped fuel of 5%)  
 % Based on Raymer Ch.3 Eq. 3.11
-  FWF       = 1.05*(1- f_to*f_cl*f_cr*f_lt*f_lnd);  % Fuel weight fraction 
+  FWF       = 1.05*(1- f_to*f_cl*f_cr*f_dec*f_lt*f_lnd);  % Fuel weight fraction 
   Wfuel     = 0.8*FWF*TOGW_temp;                    % Total fuel weight [lbs] (Overestimates - used scaling factor)
   
 % Aircraft Takeoff Gross Weight Weight (TOGW) [lbs]: Wempty+Wpayload+Wfuel  
