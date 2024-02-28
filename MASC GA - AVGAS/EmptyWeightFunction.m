@@ -9,7 +9,7 @@
 function output = EmptyWeightFunction(inputs)
 
   AR        = inputs.GeometryInputs.AR;               % wing aspect ratio
-  TW        = inputs.PerformanceInputs.PW;            % power-to-weight ratio [lb/hp]
+  TW        = inputs.PerformanceInputs.TW;            % thrust-to-weight ratio
   WS        = inputs.PerformanceInputs.WS;            % wing loading [lbs/ft^2]
   M_max      = 1.05*inputs.PerformanceInputs.M;        % M_max = 5% higher than cruise Mach  
   W_dg      = inputs.Sizing.TOGW_temp;                % Design gross weight [lb]			
