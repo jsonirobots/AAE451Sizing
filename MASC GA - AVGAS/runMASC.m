@@ -27,7 +27,7 @@ MissionInputs.pax         = 4;      % number of passengers
 EconMission.range         = 135;    % economic mission length [nmi]
 
 %% PERFORMANCE PARAMETERS
-PerformanceInputs.PW   = 0.11;      % power-to-weight ratio [lb/hp]
+PerformanceInputs.TW   = 0.234;     % thrust-to-weight ratio
 PerformanceInputs.WS   = 35;        % wing loading [lbs/ft^2]
 PerformanceInputs.V    = 190;       % cruise velocity [knots]
 PerformanceInputs.M    = 0.285;     % cruise velocity [Mach]. This needs to be changed to match V at desired altitude.  Can automate this calculation with the AtmosphereFunction
@@ -51,8 +51,7 @@ AeroInputs.Clmax   = 1.6;                  % maximum lift coefficient
 %% PROPULSION PARAMETERS
 PropulsionInputs.num_eng    = 1;           % number of engines
 PropulsionInputs.n_rpm      = 2000;        % Rotational rate [rpm] obtained from engine data
-PropulsionInputs.eta_p      = 0.85;        % Propeller efficiency
-PropulsionInputs.c_bhp      = 0.45;        % Propeller specific fuel consumption [lb/hr] 
+PropulsionInputs.C          = 0.9;         % Jet specific fuel consumption [1/hr] 
 %% PAYLOAD PARAMETERS
 PayloadInputs.crewnum    = 1;              % number of crew members (pilots)
 PayloadInputs.paxweight  = 200;            % passenger weight (including luggage) [lbs]
