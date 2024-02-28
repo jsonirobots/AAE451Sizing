@@ -2,7 +2,7 @@
 % It assumes CONSTANT ALTITUDE and MACH NUMBER for cruise. %
 % Hence, L/D is assumed to be constant (for given altitude %
 % and mach number.                                         %
-% See Raymer Ch.3 equations 3.7 and 3.8                    %
+% See Raymer Ch.6 equations 6.14                           %
 % Outputs:                                                 %
 %   Loiter fuel weight fraction                            %
 %   Loiter fuel weight                                     %    
