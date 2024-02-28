@@ -27,6 +27,7 @@ MissionInputs.pax         = 4;      % number of passengers
 EconMission.range         = 135;    % economic mission length [nmi]
 
 %% PERFORMANCE PARAMETERS
+
 PerformanceInputs.TW   = 0.234;     % thrust-to-weight ratio
 PerformanceInputs.WS   = 35;        % wing loading [lbs/ft^2]
 PerformanceInputs.V    = 190;       % cruise velocity [knots]
@@ -50,8 +51,8 @@ AeroInputs.Clmax   = 1.6;                  % maximum lift coefficient
 
 %% PROPULSION PARAMETERS
 PropulsionInputs.num_eng    = 1;           % number of engines
-PropulsionInputs.n_rpm      = 2000;        % Rotational rate [rpm] obtained from engine data
 PropulsionInputs.C          = 0.9;         % Jet specific fuel consumption [1/hr] 
+
 %% PAYLOAD PARAMETERS
 PayloadInputs.crewnum    = 1;              % number of crew members (pilots)
 PayloadInputs.paxweight  = 200;            % passenger weight (including luggage) [lbs]
