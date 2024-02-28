@@ -30,7 +30,7 @@ n_rpm       = inputs.PropulsionInputs.n_rpm;           % Rotational rate [rpm] o
 %%
 %% Internal parameters (based on Raymer Ch.6 Table 6.4)
 %  Can be changed or computed as needed
-Cht         = 0.9;        % Horizontal-tail volume coefficient
+Cht         = 1.00;        % Horizontal-tail volume coefficient
 Cvt         = 0.08;       % Vertical-tail volume coefficient
 %%
 %% Wing geometry computations (See Raymer Ch.7 Eq. 7.5-7.8)
@@ -55,18 +55,14 @@ Swetv       = 2*Sv*1.02;                               % V-tail wetted area [ft^
 
 %% Engine geometry computations (based on Raymer Taqble 10.4)
 % For turboprop engines
-% le = 0.35*Eng_power^0.373;                          % engine length [ft]
-% de = 0.8*Eng_power^0.120;                           % engine diameter [ft]
+% le = 0.35*Eng_power^0.373;                           % engine length [ft]
+% de = 0.8*Eng_power^0.120;                            % engine diameter [ft]
 
 %Scaled from PT6A:
-le = 80/12*(Eng_power/1700)^0.373;                           % engine length [ft]
-de = 24/12*(Eng_power/1700)^0.120;                           % engine diameter [ft]
+le = 224/12;                                           % engine length [ft]
+de = 163.7/12;                                         % engine diameter [ft]
 
 Sweteng     = pi*de*le*num_eng;                        % wetted area of engines [ft^2]
-
-%% Propeller sizing (based on Raymer Ch.10 Section 10.4)
-prop_dia    = 18*Eng_power^0.25/12;     % Three blade propeller diameter empirical relation [ft]
-V_tip       = pi*n_rpm*prop_dia/60;     % Tip speed of propeller [ft/s]
 
 %% Total wetted area computation
 Swet        = Swetwing+Swetfus+Swetv+Sweth+Sweteng;    % total wetted area of aircraft [ft^2]
