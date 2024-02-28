@@ -25,8 +25,7 @@ AR          = inputs.GeometryInputs.AR;                % Wing aspect ratio
 TR          = inputs.GeometryInputs.TR;                % Wing taper ratio
 lf          = inputs.LayoutOutput.lf;                  % Fuselage length [ft]
 df          = inputs.LayoutOutput.df;                  % Fuselage diameter [ft]
-Eng_power   = inputs.Sizing.Power;                     % Engine power [hp]
-n_rpm       = inputs.PropulsionInputs.n_rpm;           % Rotational rate [rpm] obtained from engine data
+
 %%
 %% Internal parameters (based on Raymer Ch.6 Table 6.4)
 %  Can be changed or computed as needed
