@@ -9,15 +9,24 @@
 function output = EmptyWeightFunction(inputs)
 
   AR        = inputs.GeometryInputs.AR;               % wing aspect ratio
-  PW        = inputs.PerformanceInputs.PW;            % power-to-weight ratio [lb/hp]
+  TW        = inputs.PerformanceInputs.PW;            % power-to-weight ratio [lb/hp]
   WS        = inputs.PerformanceInputs.WS;            % wing loading [lbs/ft^2]
-  Vmax      = 1.05*inputs.PerformanceInputs.V;        % Vmax = 5% higher than cruise velocity [knots]  
+  M_max      = 1.05*inputs.PerformanceInputs.M;        % M_max = 5% higher than cruise Mach  
   W_dg      = inputs.Sizing.TOGW_temp;                % Design gross weight [lb]			
 
 
 % Empty weight [lbs]
 %Raymer "GA - SINGLE ENGINE", Table 6.2
-  output.We = (-0.25+1.18*W_dg^(-0.20)*AR^(0.08)*PW^(0.05)*WS^(-0.05)*Vmax^(0.27))*W_dg;  
+  a         = 0.32;
+  b         = 0.66;
+  C1        = -0.13;
+  C2        = 0.30;
+  C3        = 0.06;
+  C4        = -0.05;
+  C5        = 0.05;
+  K_VS      = 1.00;
+
+  output.We = (a+b*W_dg^C1*AR^C2*TW^C3*WS^C4*M_max^(0.27))*W_dg;
 % Empty weight fraction
   output.fe = output.We/inputs.Sizing.TOGW_temp; 
 
