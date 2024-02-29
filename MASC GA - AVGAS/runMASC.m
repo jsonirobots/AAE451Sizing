@@ -19,9 +19,15 @@ clear
 clc
 
 %% DESIGN MISSION PARAMETERS
-MissionInputs.R           = 2150;    % aircraft range [nmi]
-MissionInputs.loiter_time = 0.5;   % loiter time [hours]
-MissionInputs.pax         = 0;      % number of passengers   
+DesignInputs.R           = 2150;    % aircraft range [nmi]
+DesignInputs.loiter_time = 0.5;   % loiter time [hours]
+DesignInputs.pax         = 0;      % number of passengers   
+
+%% MEDIUM PAYLOAD MISSION PARAMETERS
+
+
+%% FERRY MISSION PARAMETERS
+
 
 %% ECONOMIC MISSION PARAMETERS
 EconMission.range         = 1350;    % economic mission length [nmi]
@@ -46,7 +52,6 @@ GeometryInputs.TR          = 0.3;        % wing taper ratio
 %% CONFIGURATION PARAMETERS
 LayoutInputs.lf = 55;                    % length of fuselage [ft]
 LayoutInputs.df = 5.9;                   % diameter of fuselage [ft]
-% These parameters and their default values are listed in the LayoutFunction.m file
 
 %% AERODYNAMIC PARAMETERS
 AeroInputs.Clmax   = 1.6;                  % maximum lift coefficient
@@ -61,13 +66,13 @@ PayloadInputs.paxweight  = 200;            % passenger weight (including luggage
 PayloadInputs.crewweight = 300;            % crew member weight (including luggage) [lbs]
 PayloadInputs.loadweight = 281000;
 
-paxweight  = PayloadInputs.paxweight.*MissionInputs.pax;      % weight of passengers (including luggage) [lbs]
+paxweight  = PayloadInputs.paxweight.*DesignInputs.pax;      % weight of passengers (including luggage) [lbs]
 crewweight = PayloadInputs.crewweight*PayloadInputs.crewnum;  % weight of crew members [lbs]
 loadweight = PayloadInputs.loadweight;
 PayloadInputs.w_payload  = crewweight + paxweight + loadweight;            % total payload weight
 
 %% AGGREGATED INPUTS FOR AIRCRAFT SIZING
-inputs.MissionInputs     = MissionInputs;
+inputs.DesignInputs      = DesignInputs;
 inputs.EconMission       = EconMission;
 inputs.PerformanceInputs = PerformanceInputs;
 inputs.LayoutInputs      = LayoutInputs;
@@ -77,13 +82,13 @@ inputs.PropulsionInputs  = PropulsionInputs;
 inputs.AeroInputs        = AeroInputs;
 
 %% SIZE AIRCRAFT
-   SizingOutput = SizingIterations(inputs);
+   DesignOutput = DesignMissionFunction(inputs);
 
 %% ECONOMIC MISSION ANALYSIS
-   EconMissionOutput = EconMissionFunction(SizingOutput);
+   EconMissionOutput = EconMissionFunction(DesignOutput);
    
 %% PERFORMANCE ANALYSIS
-   PerformanceOutput = PerformanceFunction(SizingOutput);
+   PerformanceOutput = PerformanceFunction(DesignOutput);
    
 %% ACQUISITION COST ANALYSIS
 %    AqCostOutput = AcquisitionCostFunction(SizingOutput);
@@ -92,7 +97,7 @@ inputs.AeroInputs        = AeroInputs;
 %    OpCostOutput = OperatingCostFunction(SizingOutput,AqCostOutput,EconMissionOutput);
   
 %% DISPLAY RESULTS
-   FinalOutput              = SizingOutput;
+   FinalOutput              = DesignOutput;
 %    FinalOutput.AqCostOutput = AqCostOutput;
 %    FinalOutput.OpCostOutput = OpCostOutput;
    ReportFunction(FinalOutput);
