@@ -1,4 +1,5 @@
-function output = PerformanceFunction(inputs)
+function FinalOutput = PerformanceFunction(inputs)
+  FinalOutput             = inputs;
 
 % Comptue takeoff lift coefficient (assumes Clmax is 1.2 times the takeoff lift coefficient 
   Cl_to   = inputs.AeroInputs.Clmax/1.44; 
@@ -7,7 +8,7 @@ function output = PerformanceFunction(inputs)
   takeoff_parameter = (inputs.PerformanceInputs.WS)/(Cl_to*inputs.PerformanceInputs.TW);
   
 % Estimate takeoff distance by using takeoff_parameter and Figure 5.4 in Raymer Ch.5 
-  output.Sto = (35793/1029250*takeoff_parameter+1129/20585) * 1000; % take-off distance; 8.5 is the slope for Ground Roll for a 4-engined jet aircraft;
+  FinalOutput.Sto = (35793/1029250*takeoff_parameter+1129/20585) * 1000; % take-off distance; 8.5 is the slope for Ground Roll for a 4-engined jet aircraft;
                                       % change to meet FAR part 23
                                       % requirements
   
