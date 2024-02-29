@@ -18,20 +18,6 @@
 clear
 clc
 
-%% DESIGN MISSION PARAMETERS
-DesignInputs.R           = 2150;    % aircraft range [nmi]
-DesignInputs.loiter_time = 0.5;   % loiter time [hours]
-DesignInputs.pax         = 0;      % number of passengers   
-
-%% MEDIUM PAYLOAD MISSION PARAMETERS
-
-
-%% FERRY MISSION PARAMETERS
-
-
-%% ECONOMIC MISSION PARAMETERS
-EconMission.range         = 1350;    % economic mission length [nmi]
-
 %% PERFORMANCE PARAMETERS
 
 PerformanceInputs.TW   = 0.26;     % thrust-to-weight ratio
@@ -64,16 +50,38 @@ PropulsionInputs.C          = 0.5;         % Jet specific fuel consumption [1/hr
 PayloadInputs.crewnum    = 4;              % number of crew members (pilots)
 PayloadInputs.paxweight  = 200;            % passenger weight (including luggage) [lbs]
 PayloadInputs.crewweight = 300;            % crew member weight (including luggage) [lbs]
-PayloadInputs.loadweight = 281000;
 
+%% DESIGN MISSION PARAMETERS
+DesignInputs.R           = 2300;    % aircraft range [nmi]
+DesignInputs.loiter_time = 0.5;   % loiter time [hours]
+DesignInputs.pax         = 0;      % number of passengers   
+DesignInputs.loadweight  = 281000; % weight of load carried in mission
 paxweight  = PayloadInputs.paxweight.*DesignInputs.pax;      % weight of passengers (including luggage) [lbs]
 crewweight = PayloadInputs.crewweight*PayloadInputs.crewnum;  % weight of crew members [lbs]
-loadweight = PayloadInputs.loadweight;
-PayloadInputs.w_payload  = crewweight + paxweight + loadweight;            % total payload weight
+DesignInputs.w_payload  = crewweight + paxweight + DesignInputs.loadweight;
+
+%% MEDIUM PAYLOAD MISSION PARAMETERS
+MediumInputs.R           = 4800 ;    % aircraft range [nmi]
+MediumInputs.loiter_time = 0.5;   % loiter time [hours]
+MediumInputs.pax         = 0;      % number of passengers   
+MediumInputs.loadweight  = 120000; % weight of load carried in mission
+paxweight  = PayloadInputs.paxweight.*DesignInputs.pax;      % weight of passengers (including luggage) [lbs]
+crewweight = PayloadInputs.crewweight*PayloadInputs.crewnum;  % weight of crew members [lbs]
+MediumInputs.w_payload  = crewweight + paxweight + MediumInputs.loadweight;
+
+%% FERRY MISSION PARAMETERS
+FerryInputs.R           = 7000;    % aircraft range [nmi]
+FerryInputs.loiter_time = 0.5;   % loiter time [hours]
+FerryInputs.pax         = 0;      % number of passengers   
+FerryInputs.loadweight  = 0; % weight of load carried in mission
+paxweight  = PayloadInputs.paxweight.*DesignInputs.pax;      % weight of passengers (including luggage) [lbs]
+crewweight = PayloadInputs.crewweight*PayloadInputs.crewnum;  % weight of crew members [lbs]
+FerryInputs.w_payload  = crewweight + paxweight + FerryInputs.loadweight;
 
 %% AGGREGATED INPUTS FOR AIRCRAFT SIZING
 inputs.DesignInputs      = DesignInputs;
-inputs.EconMission       = EconMission;
+inputs.MediumInputs      = MediumInputs;
+inputs.FerryInputs      = FerryInputs;
 inputs.PerformanceInputs = PerformanceInputs;
 inputs.LayoutInputs      = LayoutInputs;
 inputs.GeometryInputs    = GeometryInputs;
@@ -84,11 +92,14 @@ inputs.AeroInputs        = AeroInputs;
 %% SIZE AIRCRAFT
    DesignOutput = DesignMissionFunction(inputs);
 
-%% ECONOMIC MISSION ANALYSIS
-   EconMissionOutput = EconMissionFunction(DesignOutput);
+%% MEDIUM PAYLOAD MISSION ANALYSIS
+   MediumMissionOutput = MediumMissionFunction(DesignOutput);
+
+%% FERRY MISSION ANALYSIS
+   FerryMissionOutput = FerryMissionFunction(MediumMissionOutput);
    
 %% PERFORMANCE ANALYSIS
-   PerformanceOutput = PerformanceFunction(DesignOutput);
+   PerformanceOutput = PerformanceFunction(FerryMissionOutput);
    
 %% ACQUISITION COST ANALYSIS
 %    AqCostOutput = AcquisitionCostFunction(SizingOutput);
@@ -97,7 +108,7 @@ inputs.AeroInputs        = AeroInputs;
 %    OpCostOutput = OperatingCostFunction(SizingOutput,AqCostOutput,EconMissionOutput);
   
 %% DISPLAY RESULTS
-   FinalOutput              = DesignOutput;
+   FinalOutput              = PerformanceOutput;
 %    FinalOutput.AqCostOutput = AqCostOutput;
 %    FinalOutput.OpCostOutput = OpCostOutput;
    ReportFunction(FinalOutput);
