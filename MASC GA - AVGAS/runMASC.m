@@ -57,10 +57,12 @@ PropulsionInputs.C          = 0.5;         % Jet specific fuel consumption [1/hr
 PayloadInputs.crewnum    = 4;              % number of crew members (pilots)
 PayloadInputs.paxweight  = 200;            % passenger weight (including luggage) [lbs]
 PayloadInputs.crewweight = 300;            % crew member weight (including luggage) [lbs]
+PayloadInputs.loadweight = 281000;
 
 paxweight  = PayloadInputs.paxweight.*MissionInputs.pax;      % weight of passengers (including luggage) [lbs]
 crewweight = PayloadInputs.crewweight*PayloadInputs.crewnum;  % weight of each crew member [lbs]
-PayloadInputs.w_payload  = crewweight + paxweight + 281000;            % total payload weight
+loadweight = PayloadInputs.loadweight;
+PayloadInputs.w_payload  = crewweight + paxweight + loadweight;            % total payload weight
 
 %% AGGREGATED INPUTS FOR AIRCRAFT SIZING
 inputs.MissionInputs     = MissionInputs;
