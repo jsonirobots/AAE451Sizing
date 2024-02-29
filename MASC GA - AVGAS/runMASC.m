@@ -44,6 +44,8 @@ GeometryInputs.thick2chord = 0.15;       % wing thickness-to-chord ratio
 GeometryInputs.TR          = 0.3;        % wing taper ratio
         
 %% CONFIGURATION PARAMETERS
+LayoutInputs.lf = 55;                    % length of fuselage [ft]
+LayoutInputs.df = 5.9;                   % diameter of fuselage [ft]
 % These parameters and their default values are listed in the LayoutFunction.m file
 
 %% AERODYNAMIC PARAMETERS
@@ -60,7 +62,7 @@ PayloadInputs.crewweight = 300;            % crew member weight (including lugga
 PayloadInputs.loadweight = 281000;
 
 paxweight  = PayloadInputs.paxweight.*MissionInputs.pax;      % weight of passengers (including luggage) [lbs]
-crewweight = PayloadInputs.crewweight*PayloadInputs.crewnum;  % weight of each crew member [lbs]
+crewweight = PayloadInputs.crewweight*PayloadInputs.crewnum;  % weight of crew members [lbs]
 loadweight = PayloadInputs.loadweight;
 PayloadInputs.w_payload  = crewweight + paxweight + loadweight;            % total payload weight
 
@@ -68,6 +70,7 @@ PayloadInputs.w_payload  = crewweight + paxweight + loadweight;            % tot
 inputs.MissionInputs     = MissionInputs;
 inputs.EconMission       = EconMission;
 inputs.PerformanceInputs = PerformanceInputs;
+inputs.LayoutInputs      = LayoutInputs;
 inputs.GeometryInputs    = GeometryInputs;
 inputs.PayloadInputs     = PayloadInputs;
 inputs.PropulsionInputs  = PropulsionInputs;
