@@ -5,7 +5,7 @@ function e0 = OswaldEfficiency(inputs)
 
 %% Inputs
 TR     = inputs.GeometryInputs.TR;               % wing taper ratio
-df     = inputs.LayoutOutput.df;                 % fuselage diameter [ft]
+df     = inputs.LayoutInputs.df;                 % fuselage diameter [ft]
 AR     = inputs.GeometryInputs.AR;               % wing aspect  ratio
 Lambda = inputs.GeometryInputs.WingSweep*pi/180; % wing sweep [rad]
 b      = inputs.GeometryOutput.b;                % wing span [ft]
