@@ -16,7 +16,7 @@ function output = EmptyWeightFunction(inputs)
 
 
 % Empty weight [lbs]
-%Raymer "GA - SINGLE ENGINE", Table 6.2
+%Raymer "Jet transport", Table 6.1
   a         = 0.32;
   b         = 0.66;
   C1        = -0.13;
@@ -26,7 +26,7 @@ function output = EmptyWeightFunction(inputs)
   C5        = 0.05;
   K_VS      = 1.00;
 
-  output.We = (a+b*W_dg^C1*AR^C2*TW^C3*WS^C4*M_max^(0.27))*W_dg;
+  output.We = (a+b*W_dg^C1*AR^C2*TW^C3*WS^C4*M_max^C5)*W_dg;
 % Empty weight fraction
   output.fe = output.We/inputs.Sizing.TOGW_temp; 
 
