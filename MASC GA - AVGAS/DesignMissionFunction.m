@@ -62,13 +62,13 @@ while diff > tolerance
   W6                  = W5*f_lnd;                         % aircraft weight after landing & taxi segment [lbs]
 
 %% Compute new weights based on results of current iteration  
-% Total fuel weight fraction (including trapped fuel of 5%)
+% Total fuel weight fraction (including trapped fuel of 1%)
 
   FWF       = 1.01*(1- f_to*f_cl*f_cr*f_dec*f_lt*f_lnd);  % Fuel weight fraction 
   Wfuel     = FWF*TOGW_temp;                              % Total fuel weight [lbs] (Overestimates - used scaling factor)
   
 % Aircraft Takeoff Gross Weight Weight (TOGW) [lbs]: Wempty+Wpayload+Wfuel  
-  TOGW      = EmptyWeightOutput.We + inputs.PayloadInputs.w_payload + Wfuel;  
+  TOGW      = EmptyWeightOutput.We + inputs.MissionInputs.w_payload + Wfuel;  
   
 % Compute convergence criteria & set-up for next iteration   
   diff      = abs(TOGW_temp - TOGW);
@@ -84,6 +84,6 @@ EWF  = EmptyWeightOutput.We/TOGW;  % Empty weight fraction
 FinalOutput             = inputs;
 FinalOutput.EmptyWeight = EmptyWeightOutput;
 FinalOutput.TOGW        = TOGW;
-FinalOutput.Wfuel       = Wfuel;
+FinalOutput.WfuelMaxPL       = Wfuel;
 FinalOutput.Thrust      = inputs.Sizing.Thrust;
 end
