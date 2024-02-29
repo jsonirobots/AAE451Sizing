@@ -18,7 +18,7 @@
 function FinalOutput = SizingIterations(inputs)
 
 %% Start Aircraft Sizing Iterations
-TOGW_temp = 3500;        % guess of takeoff gross weight [lbs] 
+TOGW_temp = 1000000;        % guess of takeoff gross weight [lbs] 
 tolerance = 0.1;         % sizing tolerance [lbs]
 diff      = tolerance+1; % initial tolerance gap [lbs]
 
@@ -28,9 +28,6 @@ while diff > tolerance
    W0                      = TOGW_temp;                             % initial gross weight for current iteration
    inputs.Sizing.W0        = W0;
 %% Begin estimation of weight components (empty, fuel, and total weights)
-
-% Generate internal layout data
-  inputs.LayoutOutput   = LayoutFunction(inputs);
 
 % Generate geometry data
   inputs.GeometryOutput = GeometryFunction(inputs); 
