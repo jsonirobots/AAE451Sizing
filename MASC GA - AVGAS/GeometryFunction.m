@@ -23,8 +23,8 @@ num_eng     = inputs.PropulsionInputs.num_eng;         % Number of engines
 
 AR          = inputs.GeometryInputs.AR;                % Wing aspect ratio
 TR          = inputs.GeometryInputs.TR;                % Wing taper ratio
-lf          = inputs.LayoutOutput.lf;                  % Fuselage length [ft]
-df          = inputs.LayoutOutput.df;                  % Fuselage diameter [ft]
+lf          = inputs.LayoutInputs.lf;                  % Fuselage length [ft]
+df          = inputs.LayoutInputs.df;                  % Fuselage diameter [ft]
 
 %%
 %% Internal parameters (based on Raymer Ch.6 Table 6.4)
