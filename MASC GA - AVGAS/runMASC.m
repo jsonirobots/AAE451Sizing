@@ -19,29 +19,29 @@ clear
 clc
 
 %% DESIGN MISSION PARAMETERS
-MissionInputs.R           = 250;    % aircraft range [nmi]
-MissionInputs.loiter_time = 0.75;   % loiter time [hours]
-MissionInputs.pax         = 4;      % number of passengers   
+MissionInputs.R           = 2150;    % aircraft range [nmi]
+MissionInputs.loiter_time = 0.5;   % loiter time [hours]
+MissionInputs.pax         = 0;      % number of passengers   
 
 %% ECONOMIC MISSION PARAMETERS
-EconMission.range         = 135;    % economic mission length [nmi]
+EconMission.range         = 1350;    % economic mission length [nmi]
 
 %% PERFORMANCE PARAMETERS
 
-PerformanceInputs.TW   = 0.234;     % thrust-to-weight ratio
-PerformanceInputs.WS   = 35;        % wing loading [lbs/ft^2]
-PerformanceInputs.V    = 190;       % cruise velocity [knots]
-PerformanceInputs.M    = 0.285;     % cruise velocity [Mach]. This needs to be changed to match V at desired altitude.  Can automate this calculation with the AtmosphereFunction
-PerformanceInputs.Vlt  = 100;       % loiter velocity [knots]
-PerformanceInputs.nmax = 3.75;      % maximum load factor
-PerformanceInputs.hc   = 5000;      % cruise altitude [ft]
-PerformanceInputs.hlt  = 2500;      % loiter altitude [ft]
+PerformanceInputs.TW   = 0.26;     % thrust-to-weight ratio
+PerformanceInputs.WS   = 840000/6200;        % wing loading [lbs/ft^2]
+PerformanceInputs.V    = 450;       % cruise velocity [knots]
+PerformanceInputs.M    = 0.77;     % cruise velocity [Mach]. This needs to be changed to match V at desired altitude.  Can automate this calculation with the AtmosphereFunction
+PerformanceInputs.Vlt  = 300;       % loiter velocity [knots]
+PerformanceInputs.nmax = 2;      % maximum load factor
+PerformanceInputs.hc   = 33000;      % cruise altitude [ft]
+PerformanceInputs.hlt  = 10000;      % loiter altitude [ft]
 
 %% GEOMETRY PARAMETERS
-GeometryInputs.AR          = 10;         % wing aspect ratio
-GeometryInputs.WingSweep   = 0;          % wing sweep (LE) [deg]
+GeometryInputs.AR          = 8;         % wing aspect ratio
+GeometryInputs.WingSweep   = 25;          % wing sweep (LE) [deg]
 GeometryInputs.thick2chord = 0.15;       % wing thickness-to-chord ratio
-GeometryInputs.TR          = 0.4;        % wing taper ratio
+GeometryInputs.TR          = 0.3;        % wing taper ratio
         
 %% CONFIGURATION PARAMETERS
 % These parameters and their default values are listed in the LayoutFunction.m file
@@ -51,16 +51,16 @@ AeroInputs.Clmax   = 1.6;                  % maximum lift coefficient
 
 %% PROPULSION PARAMETERS
 PropulsionInputs.num_eng    = 1;           % number of engines
-PropulsionInputs.C          = 0.9;         % Jet specific fuel consumption [1/hr] 
+PropulsionInputs.C          = 0.5;         % Jet specific fuel consumption [1/hr] 
 
 %% PAYLOAD PARAMETERS
-PayloadInputs.crewnum    = 1;              % number of crew members (pilots)
+PayloadInputs.crewnum    = 4;              % number of crew members (pilots)
 PayloadInputs.paxweight  = 200;            % passenger weight (including luggage) [lbs]
-PayloadInputs.crewweight = 180;            % crew member weight (including luggage) [lbs]
+PayloadInputs.crewweight = 300;            % crew member weight (including luggage) [lbs]
 
 paxweight  = PayloadInputs.paxweight.*MissionInputs.pax;      % weight of passengers (including luggage) [lbs]
 crewweight = PayloadInputs.crewweight*PayloadInputs.crewnum;  % weight of each crew member [lbs]
-PayloadInputs.w_payload  = crewweight + paxweight;            % total payload weight
+PayloadInputs.w_payload  = crewweight + paxweight + 281000;            % total payload weight
 
 %% AGGREGATED INPUTS FOR AIRCRAFT SIZING
 inputs.MissionInputs     = MissionInputs;
