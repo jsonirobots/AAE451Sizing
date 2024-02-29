@@ -15,12 +15,14 @@
 % Additional mission segments can be added but this function must be
 % changed to accomodate these.
 %%
-function FinalOutput = SizingIterations(inputs)
+function FinalOutput = DesignMissionFunction(inputs)
 
 %% Start Aircraft Sizing Iterations
 TOGW_temp = 1000000;        % guess of takeoff gross weight [lbs] 
 tolerance = 0.1;         % sizing tolerance [lbs]
 diff      = tolerance+1; % initial tolerance gap [lbs]
+
+inputs.MissionInputs       = inputs.DesignInputs;                   % setting inputs for this mission
 
 while diff > tolerance
    inputs.Sizing.Thrust    = TOGW_temp*inputs.PerformanceInputs.TW; % compute total power (based on P/W)
