@@ -22,7 +22,6 @@ num_engines  = SizingOutputs.PropulsionInputs.num_eng; % number of engines
 route        = SizingOutputs.EconMission.range;        % economic mission length [nmi]
 
 crewnum      = SizingOutputs.LayoutOutput.pilots; 
-flcrewnum    = SizingOutputs.LayoutOutput.flcrew;
 %% Function Parameters
 leg_num = 3;                   % number of legs per day
 day_num = 365;                 % number of operating days per year
@@ -30,7 +29,6 @@ turnarnd = 1;                  % turnaround time per leg [hours]
 
 fuelprc  = 4.04/6.7;           % price of fuel per lbs (6.7 lbs/gal)
 lr       = 25;                 % labor rate = 25 dollars/hr (for total aircraft maintenance)
-hr       = 60;                 % dollars per hour paid to flight attandents
 residual = 0.1;                % residual value of aircraft (percentage acquisition price)
 Period   = 15;                 % depreciation period [years]
 IR       = 0.08;               % interest rate
@@ -50,8 +48,6 @@ ACf = AqC-Ceng*num_engines;    % aircraft cost - engine cost [$]
 %% Direct Operating Cost + Interest  - Liebeck et al. NASA CR-195443 (1995)
 % flight crew cost per leg
   flcrew  = legtime*crewnum*(440 + 0.532*(Wto/1000));
-% cabin crew cost per leg
-  cabcrew = legtime*flcrewnum*hr;
 % maintenance hours per leg
   MHT = (1.26 + 1.774*(w_frame/100000) - 0.1071*(w_frame/100000)^2)*legtime +...
     (1.614 + 0.7227*(w_frame/100000) + 0.1024*(w_frame/100000)^2);
