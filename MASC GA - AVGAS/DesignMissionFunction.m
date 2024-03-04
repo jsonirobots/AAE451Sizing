@@ -82,6 +82,7 @@ EWF  = EmptyWeightOutput.We/TOGW;  % Empty weight fraction
 
 %% Aggregate results
 FinalOutput             = inputs;
+FinalOutput.W2overW0    = f_cl*f_to;
 FinalOutput.EmptyWeight = EmptyWeightOutput;
 FinalOutput.TOGW        = TOGW;
 FinalOutput.WfuelMaxPL       = Wfuel;
