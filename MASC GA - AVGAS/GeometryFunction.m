@@ -26,11 +26,13 @@ TR          = inputs.GeometryInputs.TR;                % Wing taper ratio
 lf          = inputs.LayoutInputs.lf;                  % Fuselage length [ft]
 df          = inputs.LayoutInputs.df;                  % Fuselage diameter [ft]
 
-%%
-%% Internal parameters (based on Raymer Ch.6 Table 6.4)
-%  Can be changed or computed as needed
-Cht         = 1.00;        % Horizontal-tail volume coefficient
-Cvt         = 0.08;       % Vertical-tail volume coefficient
+Cht         = inputs.GeometryInputs.Cht;                      % Horizontal-tail volume coefficient
+Cvt         = inputs.GeometryInputs.Cvt;                      % Vertical-tail volume coefficient
+H_loc       = inputs.GeometryInputs.H_loc;                    % Location of H-tail as a fraction of fuselage length
+V_loc       = inputs.GeometryInputs.H_loc;                    % Location of H-tail as a fraction of fuselage length
+le          = inputs.GeometryInputs.le;                       % engine length [ft]
+de          = inputs.GeometryInputs.de;                       % engine diameter [ft]
+
 %%
 %% Wing geometry computations (See Raymer Ch.7 Eq. 7.5-7.8)
 Sw          = Wt/WingLoading;                          % Wing planform area [ft^2]
@@ -43,8 +45,6 @@ fr          = lf/df;                                   % fuselage finess ratio
 Swetfus     = pi*df*lf*(1-2/fr)^(2/3)*(1+1/fr^2);      % wetted area of fuselage [ft^2]
 
 %% Tails geometry computations (Based on Raymer Ch.6 Eq. 6.28-6.29)
-H_loc       = 0.45;                                    % Location of H-tail as a fraction of fuselage length
-V_loc       = 0.45;                                    % Location of V-tail as a fraction of fuselage length
 Lht         = H_loc*lf;                                % H-tail moment arm [ft]
 Lvt         = V_loc*lf;                                % V-tail moment arm (for engines on wing) [ft]
 Sv          = Cvt*b*Sw/Lvt;                            % V-tail surface area [ft^2]
@@ -53,14 +53,6 @@ Sweth       = 2*Sh*1.02;                               % H-tail wetted area [ft^
 Swetv       = 2*Sv*1.02;                               % V-tail wetted area [ft^2]
 
 %% Engine geometry computations (based on Raymer Taqble 10.4)
-% For turboprop engines
-% le = 0.35*Eng_power^0.373;                           % engine length [ft]
-% de = 0.8*Eng_power^0.120;                            % engine diameter [ft]
-
-%Scaled from PT6A:
-le = 224/12;                                           % engine length [ft]
-de = 163.7/12;                                         % engine diameter [ft]
-
 Sweteng     = pi*de*le*num_eng;                        % wetted area of engines [ft^2]
 
 %% Total wetted area computation
@@ -76,8 +68,3 @@ output.Swetfus = Swetfus;
 output.Sweteng = Sweteng;
 output.Swet    = Swet;
 end
-
-
-  
-  
-  
