@@ -19,30 +19,30 @@ clear
 clc
 
 %% PAYLOAD PARAMETERS
-PayloadInputs.crewnum    = 4;              % number of crew members (pilots)
+PayloadInputs.crewnum    = 8;              % number of crew members (pilots)
 PayloadInputs.paxweight  = 200;            % passenger weight (including luggage) [lbs]
 PayloadInputs.crewweight = 300;            % crew member weight (including luggage) [lbs]
 
 %% DESIGN MISSION PARAMETERS
-DesignInputs.R           = 2300;           % aircraft range [nmi]
+DesignInputs.R           = 2500;           % aircraft range [nmi]
 DesignInputs.loiter_time = 0.5;            % loiter time [hours]
 DesignInputs.pax         = 0;              % number of passengers   
-DesignInputs.loadweight  = 281000;         % weight of load carried in mission
+DesignInputs.loadweight  = 430000;         % weight of load carried in mission
 paxweight  = PayloadInputs.paxweight.*DesignInputs.pax;      % weight of passengers (including luggage) [lbs]
 crewweight = PayloadInputs.crewweight*PayloadInputs.crewnum;  % weight of crew members [lbs]
 DesignInputs.w_payload  = crewweight + paxweight + DesignInputs.loadweight;
 
 %% MEDIUM PAYLOAD MISSION PARAMETERS
-MediumInputs.R           = 4800 ;    % aircraft range [nmi]
+MediumInputs.R           = 5000 ;    % aircraft range [nmi]
 MediumInputs.loiter_time = 0.5;   % loiter time [hours]
 MediumInputs.pax         = 0;      % number of passengers   
-MediumInputs.loadweight  = 120000; % weight of load carried in mission
+MediumInputs.loadweight  = 295000; % weight of load carried in mission
 paxweight  = PayloadInputs.paxweight.*DesignInputs.pax;      % weight of passengers (including luggage) [lbs]
 crewweight = PayloadInputs.crewweight*PayloadInputs.crewnum;  % weight of crew members [lbs]
 MediumInputs.w_payload  = crewweight + paxweight + MediumInputs.loadweight;
 
 %% FERRY MISSION PARAMETERS
-FerryInputs.R           = 7000;    % aircraft range [nmi]
+FerryInputs.R           = 8000;    % aircraft range [nmi]
 FerryInputs.loiter_time = 0.5;   % loiter time [hours]
 FerryInputs.pax         = 0;      % number of passengers   
 FerryInputs.loadweight  = 0; % weight of load carried in mission
@@ -54,7 +54,7 @@ FerryInputs.w_payload  = crewweight + paxweight + FerryInputs.loadweight;
 inputs = AircraftParameters();
 inputs.DesignInputs      = DesignInputs;
 inputs.MediumInputs      = MediumInputs;
-inputs.FerryInputs      = FerryInputs;
+inputs.FerryInputs       = FerryInputs;
 inputs.PayloadInputs     = PayloadInputs;
 
 %% SIZE AIRCRAFT
