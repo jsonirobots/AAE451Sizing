@@ -18,44 +18,16 @@
 clear
 clc
 
-%% PERFORMANCE PARAMETERS
-
-PerformanceInputs.TW   = 0.26;     % thrust-to-weight ratio
-PerformanceInputs.WS   = 840000/6200;        % wing loading [lbs/ft^2]
-PerformanceInputs.V    = 450;       % cruise velocity [knots]
-PerformanceInputs.M    = 0.77;     % cruise velocity [Mach]. This needs to be changed to match V at desired altitude.  Can automate this calculation with the AtmosphereFunction
-PerformanceInputs.Vlt  = 300;       % loiter velocity [knots]
-PerformanceInputs.nmax = 2;      % maximum load factor
-PerformanceInputs.hc   = 33000;      % cruise altitude [ft]
-PerformanceInputs.hlt  = 10000;      % loiter altitude [ft]
-
-%% GEOMETRY PARAMETERS
-GeometryInputs.AR          = 8;         % wing aspect ratio
-GeometryInputs.WingSweep   = 25;          % wing sweep (LE) [deg]
-GeometryInputs.thick2chord = 0.15;       % wing thickness-to-chord ratio
-GeometryInputs.TR          = 0.3;        % wing taper ratio
-        
-%% CONFIGURATION PARAMETERS
-LayoutInputs.lf = 55;                    % length of fuselage [ft]
-LayoutInputs.df = 5.9;                   % diameter of fuselage [ft]
-
-%% AERODYNAMIC PARAMETERS
-AeroInputs.Clmax   = 1.6;                  % maximum lift coefficient
-
-%% PROPULSION PARAMETERS
-PropulsionInputs.num_eng    = 1;           % number of engines
-PropulsionInputs.C          = 0.5;         % Jet specific fuel consumption [1/hr] 
-
 %% PAYLOAD PARAMETERS
 PayloadInputs.crewnum    = 4;              % number of crew members (pilots)
 PayloadInputs.paxweight  = 200;            % passenger weight (including luggage) [lbs]
 PayloadInputs.crewweight = 300;            % crew member weight (including luggage) [lbs]
 
 %% DESIGN MISSION PARAMETERS
-DesignInputs.R           = 2300;    % aircraft range [nmi]
-DesignInputs.loiter_time = 0.5;   % loiter time [hours]
-DesignInputs.pax         = 0;      % number of passengers   
-DesignInputs.loadweight  = 281000; % weight of load carried in mission
+DesignInputs.R           = 2300;           % aircraft range [nmi]
+DesignInputs.loiter_time = 0.5;            % loiter time [hours]
+DesignInputs.pax         = 0;              % number of passengers   
+DesignInputs.loadweight  = 281000;         % weight of load carried in mission
 paxweight  = PayloadInputs.paxweight.*DesignInputs.pax;      % weight of passengers (including luggage) [lbs]
 crewweight = PayloadInputs.crewweight*PayloadInputs.crewnum;  % weight of crew members [lbs]
 DesignInputs.w_payload  = crewweight + paxweight + DesignInputs.loadweight;
@@ -79,15 +51,11 @@ crewweight = PayloadInputs.crewweight*PayloadInputs.crewnum;  % weight of crew m
 FerryInputs.w_payload  = crewweight + paxweight + FerryInputs.loadweight;
 
 %% AGGREGATED INPUTS FOR AIRCRAFT SIZING
+inputs = AircraftParameters();
 inputs.DesignInputs      = DesignInputs;
 inputs.MediumInputs      = MediumInputs;
 inputs.FerryInputs      = FerryInputs;
-inputs.PerformanceInputs = PerformanceInputs;
-inputs.LayoutInputs      = LayoutInputs;
-inputs.GeometryInputs    = GeometryInputs;
 inputs.PayloadInputs     = PayloadInputs;
-inputs.PropulsionInputs  = PropulsionInputs;
-inputs.AeroInputs        = AeroInputs;
 
 %% SIZE AIRCRAFT
    DesignOutput = DesignMissionFunction(inputs);
