@@ -32,6 +32,7 @@ AeroInputs.Clmax   = 1.6;                  % maximum lift coefficient
 %% PROPULSION PARAMETERS
 PropulsionInputs.num_eng    = 4;           % number of engines
 PropulsionInputs.C          = 0.5;         % Jet specific fuel consumption [1/hr] 
+PropulsionInputs.lapse      = 1;           % lapse rate of engines at cruise
 
 inputs.PerformanceInputs = PerformanceInputs;
 inputs.GeometryInputs    = GeometryInputs;
