@@ -13,21 +13,29 @@ function FinalOutput = PerformanceFunction(inputs)
   WS = inputs.PerformanceInputs.WS;
   AR = inputs.GeometryInputs.AR;
   nmax = inputs.PerformanceInputs.nmax;
+  num_eng = inputs.PropulsionInputs.num_eng;           % number of engines
 
-  takeoff_parameter = (9-1129/20585)*1029250/35793;
+  if num_eng==2
+    takeoff_parameter = (9+12759/73945)*160750/6693;
+  elseif num_eng==4
+    takeoff_parameter = (9-1129/20585)*1029250/35793;
+  elseif num_eng==6
+    takeoff_parameter = (9-747151/2647231)*661807750/18474717;
+  else
+    fprintf("Number of engines is not supported\n")
+  end
   TWto = WSrange/takeoff_parameter/Cl_to;
 
   WSland = Cl_land/0.85/80*(9000-1000);
   
-  [a,mu,rho] = AtmosphereFunction(h);
+  [~,~,rho] = AtmosphereFunction(h);
   v = V*1.68781;
   q = 0.5*rho*v^2;
   Cdo = ParasiteDragFunction(inputs);
   oswaldInputs = inputs;
   oswaldInputs.Aero.Cdo = Cdo;
   e0 = OswaldEfficiency(oswaldInputs);
-
-
+WFcruise
   TWtoc = WFcruise/lapse*(q/WFcruise*(Cdo./WSrange+WSrange./pi./AR./e0*(nmax*WFcruise/q)^2)+100/60/v);
   
   TWmax=max([TWto,TWtoc]);
