@@ -26,7 +26,7 @@ C  = inputs.PropulsionInputs.C;             % specific fuel consumption [1/hr]
    V     = inputs.Aero.V;                           % cruise velocity [knots]
    Wf    = Wo;                                      % initialize aircraft weight for cruise computation [lbs]
    segs  = 25;                                      % number of cruise segments
-   Range_seg = round(Range/segs);                   % length of each cruise segment [nmi]
+   Range_seg = Range/segs;                   % length of each cruise segment [nmi]
    V_ft_s =  V*1.68781;                             % cruise velocity [ft/s]
    
   for i = 1:segs
