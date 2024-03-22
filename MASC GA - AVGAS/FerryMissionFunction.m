@@ -15,18 +15,31 @@
 % changed to accomodate these.
 function FinalOutput = FerryMissionFunction(inputs)
 
-inputs.MissionInputs = inputs.FerryInputs;
-
 %% Start Aircraft Sizing Iterations
 TOGW_temp = 1000000;      % guess of takeoff gross weight [lbs] 
 tolerance = 0.1;       % sizing tolerance
 diff      = tolerance+1; % initial tolerance gap
 
-while diff > tolerance
-   inputs.Sizing.TOGW_temp = TOGW_temp;             % store initial gross weight
-   W0                      = TOGW_temp;             % initial gross weight for current iteration [lbs]
-%% Begin estimation of weight components (empty, fuel, and total weights)
+inputs.MissionInputs = inputs.FerryInputs;
 
+initialFlag = isfield(inputs, "EmptyWeight") == 0;
+
+while diff > tolerance
+   inputs.Sizing.Thrust    = TOGW_temp*inputs.PerformanceInputs.TW; % compute total power (based on P/W)
+   inputs.Sizing.TOGW_temp = TOGW_temp;                             % store initial gross weight
+   W0                      = TOGW_temp;                             % initial gross weight for current iteration
+   inputs.Sizing.W0        = W0;
+%% Begin estimation of weight components (empty, fuel, and total weights)
+  if initialFlag
+    % Compute Empty weight and empty weight fraction
+    inputs.EmptyWeight = EmptyWeightFunction(inputs);
+
+    % Generate geometry data for determining heaviest load
+    inputs.GeometryOutput = GeometryFunction(inputs);
+    % inputs.GeometryOutput = inputs.FerryGeometryOutput;
+  end
+
+% Warm-up and Takeoff segment fuel weight fraction
   WarmupTakeoffOutput = WarmupTakeoffFunction(inputs);
   f_to                = WarmupTakeoffOutput.f_to;   % warm-up and takeoff fuel weight fraction
   W1                  = TOGW_temp*f_to;             % aircraft weight after warm-up and takeoff [lbs]
@@ -68,7 +81,8 @@ end
 TOGW = TOGW_temp;     % Aircraft takeoff gross weight [lbs]
 
 %% OUTPUTS
-FinalOutput             = inputs;
-FinalOutput.WfuelFerry = Wfuel; % mission fuel weight [lbs]
-FinalOutput.WtoFerry   = TOGW;  % mission takeoff gross weight [lbs]
+FinalOutput                  = inputs;
+FinalOutput.FerryTOGW        = TOGW;
+FinalOutput.FerryWfuel       = Wfuel;
+FinalOutput.FerryThrust      = inputs.Sizing.Thrust;
 
