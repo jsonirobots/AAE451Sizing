@@ -13,6 +13,14 @@ Cdo    = inputs.Aero.Cdo;                        % Parasite drag coefficient
 
 %%
 %%
-e0 = 1.78*(1-0.045*AR^0.68)-0.64;
-%e0 = 4.61*(1-0.045*AR^0.68)*(cos(Lambda))^0.15-3.1;
+e0unswept = 1.78*(1-0.045*AR^0.68)-0.64;
+e0sweept = 4.61*(1-0.045*AR^0.68)*(cos(Lambda))^0.15-3.1;
+
+if Lambda<0
+    fprintf("Value for wing sweep is not supported\n")
+elseif Lambda>(pi/6)
+    e0 = e0sweept;
+else
+    e0 = (1-Lambda*6/pi)*e0unswept + Lambda*6/pi*e0sweept;
+end
 end
