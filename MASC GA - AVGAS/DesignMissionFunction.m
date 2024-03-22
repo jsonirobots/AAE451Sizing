@@ -24,17 +24,22 @@ diff      = tolerance+1; % initial tolerance gap [lbs]
 
 inputs.MissionInputs       = inputs.DesignInputs;                   % setting inputs for this mission
 
+initialFlag = isfield(inputs, "EmptyWeight") == 0;
+
 while diff > tolerance
    inputs.Sizing.Thrust    = TOGW_temp*inputs.PerformanceInputs.TW; % compute total power (based on P/W)
    inputs.Sizing.TOGW_temp = TOGW_temp;                             % store initial gross weight
    W0                      = TOGW_temp;                             % initial gross weight for current iteration
    inputs.Sizing.W0        = W0;
 %% Begin estimation of weight components (empty, fuel, and total weights)
+  if initialFlag
+    % Compute Empty weight and empty weight fraction
+    inputs.EmptyWeight = EmptyWeightFunction(inputs);
 
-% Generate geometry data
-  inputs.GeometryOutput = GeometryFunction(inputs); 
-% Compute Empty weight and empty weight fraction
-  EmptyWeightOutput     = EmptyWeightFunction(inputs);  
+    % Generate geometry data for determining heaviest load
+    inputs.GeometryOutput = GeometryFunction(inputs);
+    % inputs.GeometryOutput = inputs.FerryGeometryOutput;
+  end
   
 % Warm-up and Takeoff segment fuel weight fraction
   WarmupTakeoffOutput = WarmupTakeoffFunction(inputs);
@@ -68,23 +73,22 @@ while diff > tolerance
   Wfuel     = FWF*TOGW_temp;                              % Total fuel weight [lbs] (Overestimates - used scaling factor)
   
 % Aircraft Takeoff Gross Weight Weight (TOGW) [lbs]: Wempty+Wpayload+Wfuel  
-  TOGW      = EmptyWeightOutput.We + inputs.MissionInputs.w_payload + Wfuel;  
+  TOGW      = inputs.EmptyWeight.We + inputs.MissionInputs.w_payload + Wfuel;  
   
 % Compute convergence criteria & set-up for next iteration   
   diff      = abs(TOGW_temp - TOGW);
   TOGW_temp = TOGW;                  
-  TOGW      = 0; 
+  % TOGW      = 0; 
 end
 
 % EmptyWeightOutput
 TOGW = TOGW_temp;                  % Aircraft takeoff gross weight [lbs]
-EWF  = EmptyWeightOutput.We/TOGW;  % Empty weight fraction
+EWF  = inputs.EmptyWeight.We/TOGW;  % Empty weight fraction
 
 %% Aggregate results
-FinalOutput             = inputs;
-FinalOutput.W2overW0    = f_cl*f_to;
-FinalOutput.EmptyWeight = EmptyWeightOutput;
-FinalOutput.TOGW        = TOGW;
-FinalOutput.WfuelMaxPL       = Wfuel;
-FinalOutput.Thrust      = inputs.Sizing.Thrust;
+FinalOutput                   = inputs;
+FinalOutput.W2overW0          = f_cl*f_to;
+FinalOutput.DesignTOGW        = TOGW;
+FinalOutput.DesignWfuel       = Wfuel;
+FinalOutput.DesignThrust      = inputs.Sizing.Thrust;
 end
