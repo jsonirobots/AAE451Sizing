@@ -23,4 +23,6 @@ elseif Lambda>(pi/6)
 else
     e0 = (1-Lambda*6/pi)*e0unswept + Lambda*6/pi*e0sweept;
 end
+
+e0=e0unswept;
 end
