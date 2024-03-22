@@ -1,3 +1,4 @@
+
 %% Function that computes the fuel and takeoff weight for different economic missions
 % The approach is similar to the aircraft sizing routine, but with the
 % exception that the empty weight of the aircraft is fixed (already known)
@@ -13,20 +14,36 @@
 %
 % Additional mission segments can be added but this function must be
 % changed to accomodate these.
+%%
 function FinalOutput = MediumMissionFunction(inputs)
-
-inputs.MissionInputs = inputs.MediumInputs;
 
 %% Start Aircraft Sizing Iterations
 TOGW_temp = 1000000;      % guess of takeoff gross weight [lbs] 
 tolerance = 0.1;       % sizing tolerance
 diff      = tolerance+1; % initial tolerance gap
 
+inputs.MissionInputs = inputs.MediumInputs;
+
+initialFlag = isfield(inputs, "EmptyWeight") == 0;
+
 while diff > tolerance
-   inputs.Sizing.TOGW_temp = TOGW_temp;             % store initial gross weight
-   W0                      = TOGW_temp;             % initial gross weight for current iteration [lbs]
+   inputs.Sizing.Thrust    = TOGW_temp*inputs.PerformanceInputs.TW; % compute total power (based on P/W)
+   inputs.Sizing.TOGW_temp = TOGW_temp;                             % store initial gross weight
+   W0                      = TOGW_temp;                             % initial gross weight for current iteration
+   inputs.Sizing.W0        = W0;
 %% Begin estimation of weight components (empty, fuel, and total weights)
 
+% Generate geometry data for determining heaviest load
+  if initialFlag
+    % Compute Empty weight and empty weight fraction
+    inputs.EmptyWeight = EmptyWeightFunction(inputs);
+
+    % Generate geometry data for determining heaviest load
+    inputs.GeometryOutput = GeometryFunction(inputs);
+    % inputs.GeometryOutput = inputs.FerryGeometryOutput;
+  end
+
+% Warm-up and Takeoff segment fuel weight fraction
   WarmupTakeoffOutput = WarmupTakeoffFunction(inputs);
   f_to                = WarmupTakeoffOutput.f_to;   % warm-up and takeoff fuel weight fraction
   W1                  = TOGW_temp*f_to;             % aircraft weight after warm-up and takeoff [lbs]
@@ -68,7 +85,8 @@ end
 TOGW = TOGW_temp;     % Aircraft takeoff gross weight [lbs]
 
 %% OUTPUTS
-FinalOutput             = inputs;
-FinalOutput.WfuelMedPL = Wfuel; % mission fuel weight [lbs]
-FinalOutput.WtoMedPL   = TOGW;  % mission takeoff gross weight [lbs]
+FinalOutput                   = inputs;
+FinalOutput.MediumTOGW        = TOGW;
+FinalOutput.MediumWfuel       = Wfuel;
+FinalOutput.MediumThrust      = inputs.Sizing.Thrust;
 
