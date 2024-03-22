@@ -57,17 +57,47 @@ inputs.MediumInputs      = MediumInputs;
 inputs.FerryInputs       = FerryInputs;
 inputs.PayloadInputs     = PayloadInputs;
 
+%% DETERMINE HEAVIEST STRUCTURE WEIGHT
+    % inputs.WS=0;
+    DesignOutput = DesignMissionFunction(inputs);
+    MediumOutput = MediumMissionFunction(inputs);
+    FerryOutput = FerryMissionFunction(inputs);
+
+    if DesignOutput.EmptyWeight.We > MediumOutput.EmptyWeight.We
+        if DesignOutput.EmptyWeight.We > FerryOutput.EmptyWeight.We
+            inputs.EmptyWeight = DesignOutput.EmptyWeight;
+            inputs.GeometryOutput = DesignOutput.GeometryOutput;
+        else
+            inputs.EmptyWeight = FerryOutput.EmptyWeight;
+            inputs.GeometryOutput = FerryOutput.GeometryOutput;
+        end
+    else
+        if MediumOutput.EmptyWeight.We > FerryOutput.EmptyWeight.We
+            inputs.EmptyWeight = MediumOutput.EmptyWeight;
+            inputs.GeometryOutput = MediumOutput.GeometryOutput;
+        else
+            inputs.EmptyWeight = FerryOutput.EmptyWeight;
+            inputs.GeometryOutput = FerryOutput.GeometryOutput;
+        end
+    end
+
+    DesignOutput.DesignTOGW
+
+    % disp(DesignOutput.EmptyWeight)
+    % disp(MediumOutput.EmptyWeight)
+    % disp(FerryOutput.EmptyWeight)
+
 %% SIZE AIRCRAFT
    DesignOutput = DesignMissionFunction(inputs);
 
 %% MEDIUM PAYLOAD MISSION ANALYSIS
-   MediumMissionOutput = MediumMissionFunction(DesignOutput);
+   MediumOutput = MediumMissionFunction(DesignOutput);
 
 %% FERRY MISSION ANALYSIS
-   FerryMissionOutput = FerryMissionFunction(MediumMissionOutput);
+   FerryOutput = FerryMissionFunction(MediumOutput);
    
 %% PERFORMANCE ANALYSIS
-   PerformanceOutput = PerformanceFunction(FerryMissionOutput);
+   PerformanceOutput = PerformanceFunction(FerryOutput);
    
 %% ACQUISITION COST ANALYSIS
 %    AqCostOutput = AcquisitionCostFunction(SizingOutput);
