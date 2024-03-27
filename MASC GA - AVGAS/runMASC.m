@@ -111,6 +111,8 @@ inputs.PayloadInputs     = PayloadInputs;
 %    FinalOutput.OpCostOutput = OpCostOutput;
    ReportFunction(FinalOutput);
 
+   PayloadRange(FinalOutput)
+
 
 
 
