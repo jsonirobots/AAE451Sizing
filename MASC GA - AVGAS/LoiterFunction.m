@@ -27,10 +27,10 @@ C  = inputs.PropulsionInputs.C;              % Propeller specific fuel consumpti
 %% loiter fuel computation  
   [Cdi,CL]    = InducedDragFunction(inputs,Wi);  % induced drag and lift coefficients 
   CD          = inputs.Aero.Cdo + Cdi;           % total drag coefficient
-  LDrat       = CL/CD;                           % lift-to-drag ratio during cruise
-  fl          = exp(-time*C/LDrat);              % loiter fuel weight fraction
-  Wf          = Wi*fl;                           % final aircraft weight after loiter segment
-  output.f_lt = Wf/Wi;                           % loiter fuel-weight ratio (for entire segment)
+  LDrat       = CL./CD;                           % lift-to-drag ratio during cruise
+  fl          = exp(-time.*C./LDrat);              % loiter fuel weight fraction
+  Wf          = Wi.*fl;                           % final aircraft weight after loiter segment
+  output.f_lt = Wf./Wi;                           % loiter fuel-weight ratio (for entire segment)
   output.fuel = Wi-Wf;                           % total loiter fuel [lbs]
 end
 
