@@ -33,11 +33,11 @@ C  = inputs.PropulsionInputs.C;             % specific fuel consumption [1/hr]
       Wi = Wf;                                      % weight at beginning of cruise segment
       [Cdi,CL]    = InducedDragFunction(inputs,Wi); % induced drag and lift coefficients 
       CD          = inputs.Aero.Cdo + Cdi;          % total drag coefficient
-      LDrat       = CL/CD;                          % lift-to-drag ratio during segment
-      fc          = exp(-Range_seg*C/(LDrat*V));    % cruise fuel fraction 
-      Wf          = Wi*fc;                          % final aircraft weight after cruise [lbs]
+      LDrat       = CL./CD;                          % lift-to-drag ratio during segment
+      fc          = exp(-Range_seg.*C./(LDrat.*V));    % cruise fuel fraction 
+      Wf          = Wi.*fc;                          % final aircraft weight after cruise [lbs]
   end
-  output.f_cr     = Wf/Wo;                          % cruise fuel-weight ratio (for entire mission)
+  output.f_cr     = Wf./Wo;                          % cruise fuel-weight ratio (for entire mission)
   output.fuel     = (Wo-Wf);                          % total cruise fuel [lbs]
 end
   
