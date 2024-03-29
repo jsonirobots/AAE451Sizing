@@ -1,7 +1,6 @@
-function FinalOutput = PerformanceFunction(inputs)
-  FinalOutput             = inputs;
-
-  WSrange=linspace(10,200,100000);
+function PerformanceFunction(inputs)
+  steps = 500;
+  WSrange=linspace(90,200,steps);
 
 % Comptue takeoff lift coefficient (assumes Clmax is 1.2 times the takeoff lift coefficient 
   Cl_to   = inputs.AeroInputs.Clmax/1.2; 
@@ -35,12 +34,12 @@ function FinalOutput = PerformanceFunction(inputs)
   oswaldInputs = inputs;
   oswaldInputs.Aero.Cdo = Cdo;
   e0 = OswaldEfficiency(oswaldInputs);
-WFcruise
-  TWtoc = WFcruise/lapse*(q/WFcruise*(Cdo./WSrange+WSrange./pi./AR./e0*(nmax*WFcruise/q)^2)+100/60/v);
+  TWtoc = WFcruise/lapse*(q/WFcruise*(Cdo./WSrange+WSrange./pi./AR./e0*(WFcruise/q)^2)+100/60/v);
   
   TWmax=max([TWto,TWtoc]);
   TWmin=min([TWto,TWtoc]);
 
+  figure(1)
   plot(WSrange, TWto)
   hold on
   plot(WSrange, TWtoc)
@@ -50,6 +49,32 @@ WFcruise
   legend("Takeoff","Top of Climb","Landing","Location","best")
   xlabel("Wing Loading (lb/ft^2)")
   ylabel("Thrust to Weight Ratio")
+
+
+  inputs = rmfield(inputs, "EmptyWeight");
+
+  inputs.PerformanceInputs.TW = TWto;
+  inputs.PerformanceInputs.WS = WSrange;
+  W0to = GeneralSizingFunction(inputs);
+
+  inputs.PerformanceInputs.TW = TWtoc;
+  inputs.PerformanceInputs.WS = WSrange;
+  W0toc = GeneralSizingFunction(inputs);
+
+  inputs.PerformanceInputs.TW = linspace(TWmin, TWmax, steps);
+  inputs.PerformanceInputs.WS = WSland*ones(1,steps);
+  W0land = GeneralSizingFunction(inputs);
+
+  figure(2)
+  plot(WSrange, W0to)
+  hold on
+  plot(WSrange, W0toc)
+  plot(WSland*ones(steps), W0land)
+  hold off
+  grid on
+  legend("Takeoff","Top of Climb","Landing","Location","best")
+  xlabel("Wing Loading (lb/ft^2)")
+  ylabel("Takeoff Weight (lbs)")
 
   
 %% See Raymer Ch. 17 to comptue other performance characteristics
