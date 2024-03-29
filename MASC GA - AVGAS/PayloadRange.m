@@ -10,7 +10,7 @@ function PayloadRange(inputs)
     numPLs = 10000;
 
     maxR = 10000;
-    Rsteps = log(maxR/2/tolerance)/log(2);
+    Rsteps = log(maxR/2/tolerance)/log(2)+1;
 
     loadweights = linspace(0,inputs.DesignInputs.loadweight, numPLs);
     payloads = loadweights + inputs.DesignInputs.w_payload - inputs.DesignInputs.loadweight;
