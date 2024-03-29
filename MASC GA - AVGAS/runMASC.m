@@ -81,12 +81,6 @@ inputs.PayloadInputs     = PayloadInputs;
         end
     end
 
-    DesignOutput.DesignTOGW
-
-    % disp(DesignOutput.EmptyWeight)
-    % disp(MediumOutput.EmptyWeight)
-    % disp(FerryOutput.EmptyWeight)
-
 %% SIZE AIRCRAFT
    DesignOutput = DesignMissionFunction(inputs);
 
@@ -97,7 +91,7 @@ inputs.PayloadInputs     = PayloadInputs;
    FerryOutput = FerryMissionFunction(MediumOutput);
    
 %% PERFORMANCE ANALYSIS
-   PerformanceOutput = PerformanceFunction(FerryOutput);
+   PerformanceFunction(FerryOutput);
    
 %% ACQUISITION COST ANALYSIS
 %    AqCostOutput = AcquisitionCostFunction(SizingOutput);
@@ -106,14 +100,9 @@ inputs.PayloadInputs     = PayloadInputs;
 %    OpCostOutput = OperatingCostFunction(SizingOutput,AqCostOutput,EconMissionOutput);
   
 %% DISPLAY RESULTS
-   FinalOutput              = PerformanceOutput;
+   FinalOutput              = FerryOutput;
 %    FinalOutput.AqCostOutput = AqCostOutput;
 %    FinalOutput.OpCostOutput = OpCostOutput;
    ReportFunction(FinalOutput);
 
    PayloadRange(FinalOutput)
-
-
-
-
-
