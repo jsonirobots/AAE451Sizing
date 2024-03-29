@@ -9,6 +9,6 @@ function Cdo = ParasiteDragFunction(inputs)
 Cfe = 0.0035;    % Military cargo
 
 % Parasite Drag coefficient
-Cdo = Cfe*inputs.GeometryOutput.Swet/inputs.GeometryOutput.Sw; 
+Cdo = Cfe.*inputs.GeometryOutput.Swet./inputs.GeometryOutput.Sw; 
 
 end
