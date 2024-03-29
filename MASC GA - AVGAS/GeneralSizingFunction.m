@@ -57,8 +57,12 @@ function output=GeneralSizingFunction(inputs)
 
 %% SIZE AIRCRAFT
    DesignOutput = DesignMissionFunction(inputs);
+   MediumOutput = MediumMissionFunction(inputs);
+   FerryOutput = FerryMissionFunction(inputs);
 
-   output = DesignOutput.DesignTOGW;
+   MTOW = max([DesignOutput.DesignTOGW; MediumOutput.MediumTOGW; FerryOutput.FerryTOGW],[],1);
+
+   output = MTOW;
 
 
 
