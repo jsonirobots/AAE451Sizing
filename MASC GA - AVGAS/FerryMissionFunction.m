@@ -14,17 +14,21 @@
 % Additional mission segments can be added but this function must be
 % changed to accomodate these.
 function FinalOutput = FerryMissionFunction(inputs)
+tolerance = 0.1;
 
 %% Start Aircraft Sizing Iterations
-TOGW_temp = 1000000.*ones(size(inputs.PerformanceInputs.WS));      % guess of takeoff gross weight [lbs] 
-tolerance = 0.1;       % sizing tolerance
-diff      = (tolerance+1).*ones(size(inputs.PerformanceInputs.WS)); % initial tolerance gap
+minTOGW = 1000000;
+maxTOGW = 2000000;
+TOGWrange = maxTOGW-minTOGW;
+TOGWsteps = log(TOGWrange/2/tolerance)/log(2)+1;
+stepsize = TOGWrange/2;
+TOGW_temp = (minTOGW+stepsize).*ones(size(inputs.PerformanceInputs.WS));
 
 inputs.MissionInputs = inputs.FerryInputs;
 
 initialFlag = isfield(inputs, "EmptyWeight") == 0;
 
-while max(diff) > tolerance
+for i=1:TOGWsteps
    inputs.Sizing.Thrust    = TOGW_temp.*inputs.PerformanceInputs.TW; % compute total power (based on P/W)
    inputs.Sizing.TOGW_temp = TOGW_temp;                             % store initial gross weight
    W0                      = TOGW_temp;                             % initial gross weight for current iteration
@@ -73,10 +77,9 @@ while max(diff) > tolerance
 % Aircraft Takeoff Gross Weight Weight (TOGW) [lbs]: Wempty+Wpayload+Wfuel  
   TOGW      = inputs.EmptyWeight.We + inputs.MissionInputs.w_payload + Wfuel;  
   
-% Compute convergence criteria & set-up for next iteration   
-  diff      = abs(TOGW_temp - TOGW);
-  TOGW_temp = TOGW;                  
-  TOGW      = 0; 
+  stepsize = stepsize/2;
+  stepdir = -sign(TOGW_temp-TOGW);
+  TOGW_temp = TOGW_temp + stepdir*stepsize;
 end
 TOGW = TOGW_temp;     % Aircraft takeoff gross weight [lbs]
 
