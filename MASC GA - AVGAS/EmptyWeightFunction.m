@@ -26,8 +26,8 @@ function output = EmptyWeightFunction(inputs)
   C5        = 0.05;
   K_VS      = 1.00;
 
-  output.We = (a+b*W_dg^C1*AR^C2*TW^C3*WS^C4*M_max^C5)*W_dg;
+  output.We = (a+b.*W_dg.^C1.*AR.^C2.*TW.^C3.*WS.^C4.*M_max.^C5).*W_dg;
 % Empty weight fraction
-  output.fe = output.We/inputs.Sizing.TOGW_temp; 
+  output.fe = output.We./inputs.Sizing.TOGW_temp; 
 
 end
