@@ -31,7 +31,7 @@ an225.wing.TR = 0.2; % wing taper ratio
 an225.wing.CLmax = 2.8; % maximum lift coefficient
 an225.wing.lambdaLE = 32; % deg, leading edge sweep angle
 an225.fuselage.length = 270; % ft, fuselage length
-an225.fuselage.dia = 50; % ft, fuselage diameter
+an225.fuselage.dia = 30; % ft, fuselage diameter
 
 an225.htail.loc = 0.8547; % location of htail as fraction of fuselage length from nose
 an225.vtail.loc = 0.8974; % location of vtail as fraction of fuselage length from nose

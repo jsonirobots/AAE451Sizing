@@ -39,7 +39,7 @@ end
 %WS = linspace(baseWS-varyWS,baseWS+varyWS*stencilpts,50);
 WS = linspace(20,200,50);
 cons = constraints(origPlane,WS,out.Wfracs); % constraint function
-correction = 0.75;
+correction = 0.84;
 conW01 = origPlane.TWR*origPlane.W0max./(cons.TOC.TWR.*correction); % T/W0 * W0 = T; T/(T/W) = W
 conW02 = origPlane.TWR*origPlane.W0max./(cons.TO.TWR);
 
