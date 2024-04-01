@@ -6,15 +6,15 @@ function e0 = OswaldEfficiency(inputs)
 %% Inputs
 TR     = inputs.GeometryInputs.TR;               % wing taper ratio
 df     = inputs.LayoutInputs.df;                 % fuselage diameter [ft]
-AR     = inputs.GeometryInputs.AR;               % wing aspect  ratio
+AR     = inputs.GeometryOutput.AR;               % wing aspect  ratio
 Lambda = inputs.GeometryInputs.WingSweep*pi/180; % wing sweep [rad]
-b      = inputs.GeometryOutput.b;                % wing span [ft]
+b      = inputs.GeometryInputs.b;                % wing span [ft]
 Cdo    = inputs.Aero.Cdo;                        % Parasite drag coefficient
 
 %%
 %%
-e0unswept = 1.78*(1-0.045*AR^0.68)-0.64;
-e0sweept = 4.61*(1-0.045*AR^0.68)*(cos(Lambda))^0.15-3.1;
+e0unswept = 1.78*(1-0.045.*AR.^0.68)-0.64;
+e0sweept = 4.61*(1-0.045.*AR.^0.68)*(cos(Lambda))^0.15-3.1;
 
 if Lambda<0
     fprintf("Value for wing sweep is not supported\n")
