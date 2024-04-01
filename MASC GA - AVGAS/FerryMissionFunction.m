@@ -35,11 +35,12 @@ for i=1:TOGWsteps
    inputs.Sizing.W0        = W0;
 %% Begin estimation of weight components (empty, fuel, and total weights)
   if initialFlag
+    % Generate geometry data for determining heaviest load
+    inputs.GeometryOutput = GeometryFunction(inputs);
+    
     % Compute Empty weight and empty weight fraction
     inputs.EmptyWeight = EmptyWeightFunction(inputs);
 
-    % Generate geometry data for determining heaviest load
-    inputs.GeometryOutput = GeometryFunction(inputs);
     % inputs.GeometryOutput = inputs.FerryGeometryOutput;
   end
 
