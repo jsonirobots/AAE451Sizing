@@ -14,7 +14,7 @@ function PerformanceFunction(inputs)
   V  = inputs.PerformanceInputs.V;            % Velocity [knots]
   h  = inputs.PerformanceInputs.hc;            % Altitude [ft]
   WS = inputs.PerformanceInputs.WS;
-  AR = inputs.GeometryInputs.AR;
+  AR = inputs.GeometryOutput.AR;
   nmax = inputs.PerformanceInputs.nmax;
   num_eng = inputs.PropulsionInputs.num_eng;           % number of engines
 
