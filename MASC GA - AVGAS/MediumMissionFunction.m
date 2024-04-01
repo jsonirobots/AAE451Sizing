@@ -39,11 +39,12 @@ for i=1:TOGWsteps
 
 % Generate geometry data for determining heaviest load
   if initialFlag
+    % Generate geometry data for determining heaviest load
+    inputs.GeometryOutput = GeometryFunction(inputs);
+    
     % Compute Empty weight and empty weight fraction
     inputs.EmptyWeight = EmptyWeightFunction(inputs);
 
-    % Generate geometry data for determining heaviest load
-    inputs.GeometryOutput = GeometryFunction(inputs);
     % inputs.GeometryOutput = inputs.FerryGeometryOutput;
   end
 
