@@ -4,7 +4,7 @@ function [Cdi,CL] = InducedDragFunction(inputs,Wi)
 
 %% Inputs
   Sw = inputs.GeometryOutput.Sw; % Planform wing area [ft^2]
-  AR = inputs.GeometryInputs.AR; % Wing Aspect ratio
+  AR = inputs.GeometryOutput.AR; % Wing Aspect ratio
   e0 = inputs.Aero.e0;           % Oswald Efficiency Factor
   V  = inputs.Aero.V;            % Velocity [knots]
   h  = inputs.Aero.h;            % Altitude [ft]
@@ -23,7 +23,7 @@ function [Cdi,CL] = InducedDragFunction(inputs,Wi)
   CL = Wi./q./Sw;
 
 % Induced Drag Coefficient 
-  Cdi = CL.^2./(pi*AR*e0);    
+  Cdi = CL.^2./(pi.*AR.*e0);    
   
 end
   
