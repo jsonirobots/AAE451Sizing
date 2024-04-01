@@ -171,7 +171,7 @@ function PerformanceFunction(inputs)
   legend("Takeoff","Top of Climb","Landing", "WS="+num2str(WSmax), "WS="+num2str(centerWS), "WS="+num2str(WSmin), "TW="+num2str(TWmax), "TW="+num2str(centerTW), "TW="+num2str(TWmin),"Location","best")
   xlabel("Wing Loading (lb/ft^2)")
   ylabel("Takeoff Weight (lbs)")
-  title("Carpet Plot Unskewed")
+  title("Carpet Plot Skewed")
 
 
   
