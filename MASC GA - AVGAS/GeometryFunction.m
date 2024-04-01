@@ -21,7 +21,8 @@ WingLoading = inputs.PerformanceInputs.WS;             % Wing loading [lbs/ft^2]
 M           = inputs.PerformanceInputs.M;              % Cruise mach number
 num_eng     = inputs.PropulsionInputs.num_eng;         % Number of engines
 
-AR          = inputs.GeometryInputs.AR;                % Wing aspect ratio
+b           = inputs.GeometryInputs.b;                 % Wing span
+% AR          = inputs.GeometryInputs.AR;                % Wing aspect ratio
 TR          = inputs.GeometryInputs.TR;                % Wing taper ratio
 lf          = inputs.LayoutInputs.lf;                  % Fuselage length [ft]
 df          = inputs.LayoutInputs.df;                  % Fuselage diameter [ft]
@@ -36,7 +37,8 @@ de          = inputs.GeometryInputs.de;                       % engine diameter 
 %%
 %% Wing geometry computations (See Raymer Ch.7 Eq. 7.5-7.8)
 Sw          = Wt./WingLoading;                          % Wing planform area [ft^2]
-b           = sqrt(AR.*Sw);                             % Wing span [ft]
+% b           = sqrt(AR.*Sw);                             % Wing span [ft]
+AR          = b.^2./Sw;
 MAC         = ((1+TR+(TR.^2))./(1+TR).^2).*(Sw./b).*(4/3);   % Mean aerodynamic chord of wing
 Swetwing    = 2*Sw*1.02;                               % Wing wetted area [ft^2]
 %% Fuselage wetted computations
@@ -59,7 +61,7 @@ Sweteng     = pi.*de.*le.*num_eng;                        % wetted area of engin
 Swet        = Swetwing+Swetfus+Swetv+Sweth+Sweteng;    % total wetted area of aircraft [ft^2]
 
 %% Function Outputs
-output.b       = b;
+output.AR      = AR;
 output.MAC     = MAC;
 output.Sv      = Sv;
 output.Sh      = Sh;
