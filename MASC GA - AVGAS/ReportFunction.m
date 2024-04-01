@@ -30,10 +30,10 @@ fprintf('%s \n','------------------------------------          ')
 
 fprintf('%s \n','------------------------------------          ')
 fprintf('Wing Parameters\n')
-fprintf('%s%7.3f%s \n','Aspect Ratio:          ',inputs.GeometryInputs.AR,'')
+fprintf('%s%7.3f%s \n','Aspect Ratio:          ',inputs.GeometryOutput.AR,'')
 fprintf('%s%7.0f%s \n','Wing Loading:          ',inputs.PerformanceInputs.WS,' lbs/ft^2')
 fprintf('%s%7.0f%s \n','Wing Area:             ',inputs.GeometryOutput.Sw,' ft^2')
-fprintf('%s%7.0f%s \n','Wing Span:             ',inputs.GeometryOutput.b,' ft')
+fprintf('%s%7.0f%s \n','Wing Span:             ',inputs.GeometryInputs.b,' ft')
 fprintf('%s \n','------------------------------------          ')
 % inputs.GeometryInputs.AR*inputs.PerformanceInputs.WS/inputs.TOGW
 % fprintf('%s \n','Empty Weight breakdown          ')
