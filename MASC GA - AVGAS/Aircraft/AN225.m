@@ -11,7 +11,7 @@ PerformanceInputs.hc   = 31000;                               % cruise altitude 
 PerformanceInputs.hlt  = 25000;                               % loiter altitude [ft]
 
 %% GEOMETRY PARAMETERS
-GeometryInputs.AR          = 8.6;            % wing aspect ratio
+GeometryInputs.b           = 290;            % wing aspect ratio
 GeometryInputs.WingSweep   = 32.5;           % wing sweep (LE) [deg]
 GeometryInputs.thick2chord = 0.3967;         % wing thickness-to-chord ratio
 GeometryInputs.TR          = 0.4286;          % wing taper ratio
