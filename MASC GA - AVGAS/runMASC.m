@@ -106,3 +106,5 @@ inputs.PayloadInputs     = PayloadInputs;
    ReportFunction(FinalOutput);
 
    PayloadRange(FinalOutput)
+
+   Vndiagram(FinalOutput)
