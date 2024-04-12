@@ -38,6 +38,14 @@ U = (38-66)/(50000-20000)*(hc-20000)+66;
 VS = VAplus/sqrt(nmax);
 VB = VS*sqrt(1+K*U*Vcruise*CLalpha/498/WS);
 
+n_plus_intersect = n_plus(1:find(n_plus<nmax,1, "last"));
+V_plus_intersect = Vrange(1:find(n_plus<nmax,1, "last"));
+n_minus_intersect = n_minus(1:find(n_minus>nmin,1, "last"));
+V_minus_intersect = Vrange(1:find(n_minus>nmin,1, "last"));
+
+n_contour = [n_plus_intersect, nmax, nmin, fliplr(n_minus_intersect)];
+V_contour = [V_plus_intersect, Vmax, Vmax, fliplr(V_minus_intersect)];
+
 figure(21)
 plot([Vmin, Vmax*1.1], [nmax,nmax])
 
@@ -53,6 +61,7 @@ plot(Vrange(1:find(n_minus>n_lower_cutoff,1, "last")), n_minus_filtered)
 plot(Vrange(1:find(n_plus<n_upper_cutoff,1, "last")), n_plus_filtered)
 
 plot([Vmin, Vmax*1.1], [0,0], "k")
+plot(V_contour, n_contour, "k", "LineWidth", 3)
 hold off
 
 legend("n_{max}", "n_{min}", "V_C", "V_D", "V_A", "V_{A-}", "V_B", "Location","best")
