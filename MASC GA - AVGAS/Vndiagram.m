@@ -74,5 +74,8 @@ plot([Vmin, Vmax*1.1], [0,0], "k")
 plot(V_contour, n_contour, "k", "LineWidth", 3)
 hold off
 
-legend("n_{max}", "n_{min}", "V_C", "V_D", "V_A", "V_{A-}", "V_B", "Location","best")
+legend("n_{max}", "n_{min}", "V_C", "V_D", "V_A", "V_{A-}", "V_B", "Location","northwest")
+xlabel("Velocity [ft/s]")
+ylabel("Load Factor, n")
+title("Load Factor vs. Velocity")
 
