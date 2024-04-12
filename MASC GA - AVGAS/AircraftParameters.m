@@ -30,8 +30,9 @@ LayoutInputs.lf              = 250;      % length of fuselage [ft]
 LayoutInputs.df              = 26;       % diameter of fuselage [ft]
 
 %% AERODYNAMIC PARAMETERS
-AeroInputs.CLmax             = 1.6;      % maximum lift coefficient
-AeroInputs.CLmin             = -0.5;     % minimum lift coefficient
+AeroInputs.CLmax             = 2.8;      % maximum lift coefficient
+AeroInputs.CLmaxcruise       = 1.5;      % maximum lift coefficient at cruise configuration
+AeroInputs.CLmin             = -1;       % minimum lift coefficient
 AeroInputs.CLalpha           = 2*pi;     % lift coefficient slope [1/rad]
 
 %% PROPULSION PARAMETERS
