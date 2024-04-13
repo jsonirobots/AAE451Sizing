@@ -12,11 +12,25 @@ function PayloadRange(inputs)
     maxR = 10000;
     Rsteps = log(maxR/2/tolerance)/log(2)+1;
 
-    loadweights = linspace(0,inputs.DesignInputs.loadweight, numPLs);
-    payloads = loadweights + inputs.DesignInputs.w_payload - inputs.DesignInputs.loadweight;
-    maxFW = inputs.FerryWfuel;
-    MTOW = max([inputs.DesignTOGW, inputs.MediumTOGW, inputs.FerryTOGW]);
-    WS = inputs.EmptyWeight.We;
+    missionnames = fieldnames(inputs.Missions);
+    maxLoadweight = 0;
+    maxFW = 0;
+    MTOW = 0;
+    for i=1:size(missionnames,1)
+        if (getfield(inputs.Missions, missionnames{i}).loadweight>maxLoadweight)
+            maxLoadweight = getfield(inputs.Missions, missionnames{i}).loadweight;
+        end
+        if (getfield(inputs.Missionoutputs, missionnames{i}).Wfuel>maxFW)
+            maxFW = getfield(inputs.Missionoutputs, missionnames{i}).Wfuel;
+        end
+        if (getfield(inputs.Missionoutputs, missionnames{i}).Wmat(1)>MTOW)
+            MTOW = getfield(inputs.Missionoutputs, missionnames{i}).Wmat(1);
+        end
+    end
+
+    loadweights = linspace(0,maxLoadweight, numPLs);
+    payloads = loadweights + inputs.PayloadInputs.crewpayload;
+    WS = getfield(inputs.Missionoutputs, missionnames{i}).EmptyWeight.We;
     fuelweights = min([MTOW-payloads-WS; ones(1, numPLs)*maxFW],[],1);
     FWFs = fuelweights./(fuelweights+payloads+WS);
 
