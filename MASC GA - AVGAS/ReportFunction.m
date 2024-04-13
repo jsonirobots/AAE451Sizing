@@ -1,53 +1,209 @@
-% Function that displays aircraft sizing results
+function PerformanceFunction(inputs)
+  CLmax = inputs.AeroInputs.CLmax;
+  lapse = inputs.PropulsionInputs.lapse;
+  V  = inputs.PerformanceInputs.V;            % Velocity [knots]
+  h  = inputs.PerformanceInputs.hc;            % Altitude [ft]
+  WS = inputs.PerformanceInputs.WS;
+  AR = inputs.GeometryOutput.AR;
+  nmax = inputs.PerformanceInputs.nmax;
+  num_eng = inputs.PropulsionInputs.num_eng;           % number of engines
+  climb_angle = inputs.PerformanceInputs.climbAngle;
 
-function [] = ReportFunction(inputs)
-fprintf('%s \n','------------------------------------          ')
-fprintf('Maximum Payload\n')
-fprintf('%s%7.0f%s \n','Takeoff Gross Weight:  ',inputs.DesignTOGW,' lbs')
-fprintf('%s%7.0f%s \n','Fuel Weight:           ',inputs.DesignWfuel,' lbs')
-fprintf('%s%7.0f%s \n','Payload Weight:        ',inputs.DesignInputs.w_payload,' lbs')
-fprintf('%s%7.0f%s \n','Empty Weight:          ',inputs.EmptyWeight.We,' lbs')
-fprintf('%s%7.3f%s \n','We/W0:                 ',inputs.EmptyWeight.We/inputs.DesignTOGW,'')
-fprintf('%s \n','------------------------------------          ')
+  missionnames = fieldnames(inputs.Missions);
+  Wmat = getfield(inputs.Missionoutputs, missionnames{1}).Wmat;
 
-fprintf('%s \n','------------------------------------          ')
-fprintf('Medium Payload\n')
-fprintf('%s%7.0f%s \n','Takeoff Gross Weight:  ',inputs.MediumTOGW,' lbs')
-fprintf('%s%7.0f%s \n','Fuel Weight:           ',inputs.MediumWfuel,' lbs')
-fprintf('%s%7.0f%s \n','Payload Weight:        ',inputs.MediumInputs.w_payload,' lbs')
-fprintf('%s%7.0f%s \n','Empty Weight:          ',inputs.EmptyWeight.We,' lbs')
-fprintf('%s%7.3f%s \n','We/W0:                 ',inputs.EmptyWeight.We/inputs.MediumTOGW,'')
-fprintf('%s \n','------------------------------------          ')
 
-fprintf('%s \n','------------------------------------          ')
-fprintf('Ferry\n')
-fprintf('%s%7.0f%s \n','Takeoff Gross Weight:  ',inputs.FerryTOGW,' lbs')
-fprintf('%s%7.0f%s \n','Fuel Weight:           ',inputs.FerryWfuel,' lbs')
-fprintf('%s%7.0f%s \n','Payload Weight:        ',inputs.FerryInputs.w_payload,' lbs')
-fprintf('%s%7.0f%s \n','Empty Weight:          ',inputs.EmptyWeight.We,' lbs')
-fprintf('%s%7.3f%s \n','We/W0:                 ',inputs.EmptyWeight.We/inputs.FerryTOGW,'')
-fprintf('%s \n','------------------------------------          ')
+  steps = 500;
+  WSrange=linspace(90,200,steps);
+  carpetWSvariance = 0.2;
+  carpetTWvariance = 0.2;
+  skewOffset = 4;
+  skewcenter = [0,-1];
 
-fprintf('%s \n','------------------------------------          ')
-fprintf('Wing Parameters\n')
-fprintf('%s%7.3f%s \n','Aspect Ratio:          ',inputs.GeometryOutput.AR,'')
-fprintf('%s%7.0f%s \n','Wing Loading:          ',inputs.PerformanceInputs.WS,' lbs/ft^2')
-fprintf('%s%7.0f%s \n','Wing Area:             ',inputs.GeometryOutput.Sw,' ft^2')
-fprintf('%s%7.0f%s \n','Wing Span:             ',inputs.GeometryInputs.b,' ft')
-fprintf('%s \n','------------------------------------          ')
-% inputs.GeometryInputs.AR*inputs.PerformanceInputs.WS/inputs.TOGW
-% fprintf('%s \n','Empty Weight breakdown          ')
-% fprintf('%s \n','____________________________________          ')
-% fprintf('%s%6.0f%s \n','           Wing:        ',inputs.EmptyWeight.Wwing,' lbs')
-% fprintf('%s%6.0f%s \n','           Fuselage:    ',inputs.EmptyWeight.Wfus,' lbs')
-% fprintf('%s%6.0f%s \n','           Vtail:       ',inputs.EmptyWeight.WVtail,' lbs')
-% fprintf('%s%6.0f%s \n','           Htail:       ',inputs.EmptyWeight.WHtail,' lbs')
-% fprintf('%s%6.0f%s \n','           Engines:     ',inputs.EmptyWeight.Weng,' lbs')
-% fprintf('%s%6.0f%s \n','           Gear:        ',inputs.EmptyWeight.Wgear,' lbs')
-% fprintf('%s%6.0f%s \n','           Misc:        ',inputs.EmptyWeight.Wmisc,' lbs')
-% fprintf('%s \n','------------------------------------          ')
-% fprintf('%s \n','Costs          ')
-% fprintf('%s \n','____________________________________          ')
-% fprintf('%s%6.0f%s \n','Acquisition Cost:       $ ',inputs.AqCostOutput.AqCost,' ')
-% fprintf('%s%6.0f%s \n','Operating Cost (DOC+I): $   ',inputs.OpCostOutput.DOC_leg,' /leg')
-% fprintf('%s%6.0f%s \n','Operating Cost (DOC+I): $   ',inputs.OpCostOutput.DOC_BH,' /BH')
+% Comptue takeoff lift coefficient (assumes Clmax is 1.2 times the takeoff lift coefficient 
+  Cl_to   = CLmax/1.2; 
+  Cl_land = CLmax;
+  WFcruise = Wmat(3)/Wmat(1);
+  WFclimb = Wmat(2)/Wmat(1);
+
+
+  if num_eng==2
+    takeoff_parameter = (9+12759/73945)*160750/6693;
+  elseif num_eng==4
+    takeoff_parameter = (9-1129/20585)*1029250/35793;
+  elseif num_eng==6
+    takeoff_parameter = (9-747151/2647231)*661807750/18474717;
+  else
+    fprintf("Number of engines is not supported\n")
+  end
+  TWto = WSrange/takeoff_parameter/Cl_to;
+
+  WSland = Cl_land/0.85/80*(9000-1000);
+  
+  [~,~,rho] = AtmosphereFunction(h);
+  v = V*1.68781;
+  q = 0.5*rho*v^2;
+  Cdo = ParasiteDragFunction(inputs);
+  oswaldInputs = inputs;
+  oswaldInputs.Aero.Cdo = Cdo;
+  e0 = OswaldEfficiency(oswaldInputs);
+
+  tempinput = inputs;
+  tempinput.PerformanceInputs.WS = WSrange;
+  ARrange = GeometryFunction(tempinput).AR;
+  tempinput.GeometryOutput.AR=ARrange;
+  e0range  
+  TWtoc = WFcruise/lapse*(q/WFcruise*(Cdo./WSrange+WSrange./pi./ARrange./e0*(WFcruise/q)^2)+100/60/v);
+
+  [~,~,rhosl] = AtmosphereFunction(0);  
+  Vstall = sqrt(2/rhosl*WS/Cl_land);
+  Vclimb = 1.2*Vstall;
+  qclimb = 0.5*rhosl*Vclimb^2;
+  TWcli = WFcruise/lapse*(qclimb/WFcruise*(Cdo./WSrange+WSrange./pi./AR./e0*(WFcruise/q)^2)+sin(climb_angle*pi/180));
+
+  TWmax=max([TWto,TWtoc]);
+  TWmin=min([TWto,TWtoc]);
+
+  figure(1)
+  plot(WSrange, TWto)
+  hold on
+  plot(WSrange, TWtoc)
+  plot(WSrange, TWcli)
+  plot([WSland,WSland],[TWmin,TWmax])
+  hold off
+  grid on
+  legend("Takeoff","Top of Climb", "Climb","Landing","Location","best")
+  xlabel("Wing Loading (lb/ft^2)")
+  ylabel("Thrust to Weight Ratio")
+
+  centerTW = inputs.PerformanceInputs.TW;
+  centerWS = inputs.PerformanceInputs.WS;
+  inputs = rmfield(inputs, "EmptyWeight");
+
+  inputs.PerformanceInputs.TW = TWto;
+  inputs.PerformanceInputs.WS = WSrange;
+  W0to = GeneralSizingFunction(inputs);
+
+  inputs.PerformanceInputs.TW = TWtoc;
+  inputs.PerformanceInputs.WS = WSrange;
+  W0toc = GeneralSizingFunction(inputs);
+
+  inputs.PerformanceInputs.TW = TWcli;
+  inputs.PerformanceInputs.WS = WSrange;
+  W0cli = GeneralSizingFunction(inputs);
+
+  inputs.PerformanceInputs.TW = linspace(TWmin, TWmax, steps);
+  inputs.PerformanceInputs.WS = WSland*ones(1,steps);
+  W0land = GeneralSizingFunction(inputs);
+
+  linspaceRangeOffset = mod(steps,2)-1;
+  TWstep = centerTW * carpetTWvariance;
+  TWmin = centerTW - TWstep;
+  TWmax = centerTW + TWstep;
+  WSstep = centerWS * carpetWSvariance;
+  WSmin = centerWS - WSstep;
+  WSmax = centerWS + WSstep;
+
+  inputs.PerformanceInputs.TW = linspace(TWmin, TWmax, steps+linspaceRangeOffset);
+  inputs.PerformanceInputs.WS = WSmax;
+  WSWSp = WSmax * ones(1, steps+linspaceRangeOffset);
+  W0WSp = GeneralSizingFunction(inputs);
+
+  inputs.PerformanceInputs.TW = linspace(TWmin, TWmax, steps+linspaceRangeOffset);
+  inputs.PerformanceInputs.WS = centerWS;
+  WSWSc = centerWS * ones(1, steps+linspaceRangeOffset);
+  W0WSc = GeneralSizingFunction(inputs);
+
+  inputs.PerformanceInputs.TW = linspace(TWmin, TWmax, steps+linspaceRangeOffset);
+  inputs.PerformanceInputs.WS = WSmin;
+  WSWSm = WSmin * ones(1, steps+linspaceRangeOffset);
+  W0WSm = GeneralSizingFunction(inputs);
+
+  inputs.PerformanceInputs.TW = TWmax;
+  inputs.PerformanceInputs.WS = linspace(WSmin, WSmax, steps+linspaceRangeOffset);
+  WSTWp = inputs.PerformanceInputs.WS;
+  W0TWp = GeneralSizingFunction(inputs);
+
+  inputs.PerformanceInputs.TW = centerTW;
+  inputs.PerformanceInputs.WS = linspace(WSmin, WSmax, steps+linspaceRangeOffset);
+  WSTWc = inputs.PerformanceInputs.WS;
+  W0TWc = GeneralSizingFunction(inputs);
+
+  inputs.PerformanceInputs.TW = TWmin;
+  inputs.PerformanceInputs.WS = linspace(WSmin, WSmax, steps+linspaceRangeOffset);
+  WSTWm = inputs.PerformanceInputs.WS;
+  W0TWm = GeneralSizingFunction(inputs);
+
+  WSint = [WSmax, centerWS, WSmin, WSmax, centerWS, WSmin, WSmax, centerWS, WSmin];
+  W0int = [W0TWp(end), W0TWp(steps/2), W0TWp(1), W0TWc(end), W0TWc(steps/2), W0TWc(1), W0TWm(end), W0TWm(steps/2), W0TWm(1)];
+  % WSTWp(steps/2)
+
+  figure(2)
+  plot(WSrange, W0to)
+  hold on
+  plot(WSrange, W0toc)
+  plot(WSrange, W0cli)
+  plot(WSland*ones(steps), W0land)
+
+  plot(WSWSp, W0WSp)
+  plot(WSWSc, W0WSc)
+  plot(WSWSm, W0WSm)
+  plot(WSTWp, W0TWp)
+  plot(WSTWc, W0TWc)
+  plot(WSTWm, W0TWm)
+
+  plot(WSint, W0int, " ob")
+  hold off
+  grid on
+  legend("Takeoff","Top of Climb","Landing", "WS="+num2str(WSmax), "WS="+num2str(centerWS), "WS="+num2str(WSmin), "TW="+num2str(TWmax), "TW="+num2str(centerTW), "TW="+num2str(TWmin),"Location","best")
+  xlabel("Wing Loading (lb/ft^2)")
+  ylabel("Takeoff Weight (lbs)")
+  title("Carpet Plot Unskewed")
+
+  if skewcenter(2) == 0
+      offset = -skewOffset;
+  elseif skewcenter(2) == 1
+      offset = -2*skewOffset;
+  else
+      offset = 0;
+  end
+
+
+
+  figure(3)
+  plot(WSrange, W0to)
+  hold on
+  plot(WSrange, W0toc)
+  plot(WSrange, W0cli)
+  plot(WSland*ones(steps), W0land)
+
+  ws = warning('off','all');
+  coeffs = polyfit([W0TWm(end), W0TWc(end), W0TWp(end)], [offset, skewOffset + offset, 2*skewOffset + offset], 2);
+  offsets = polyval(coeffs, W0WSp);
+  plot(WSWSp+offsets, W0WSp)
+
+  coeffs = polyfit([W0TWm(steps/2), W0TWc(steps/2), W0TWp(steps/2)], [offset, skewOffset + offset, 2*skewOffset + offset], 2);
+  offsets = polyval(coeffs, W0WSc);
+  plot(WSWSc+offsets, W0WSc)
+
+  coeffs = polyfit([W0TWm(1), W0TWc(1), W0TWp(1)], [offset, skewOffset + offset, 2*skewOffset + offset], 2);
+  offsets = polyval(coeffs, W0WSm);
+  plot(WSWSm+offsets, W0WSm)
+  warning(ws)
+
+  plot(WSTWp + 2*skewOffset + offset, W0TWp)
+  plot(WSTWc + skewOffset + offset, W0TWc)
+  plot(WSTWm + offset, W0TWm)
+
+  plot([WSint(1:3) + 2*skewOffset + offset, WSint(4:6) + skewOffset + offset, WSint(7:9) + offset], W0int, " ob")
+  hold off
+  grid on
+  legend("Takeoff","Top of Climb","Landing", "WS="+num2str(WSmax), "WS="+num2str(centerWS), "WS="+num2str(WSmin), "TW="+num2str(TWmax), "TW="+num2str(centerTW), "TW="+num2str(TWmin),"Location","best")
+  xlabel("Wing Loading (lb/ft^2)")
+  ylabel("Takeoff Weight (lbs)")
+  title("Carpet Plot Skewed")
+
+
+  
+%% See Raymer Ch. 17 to comptue other performance characteristics
+%% See Raymer Ch. 16 to compute control and stability performance
