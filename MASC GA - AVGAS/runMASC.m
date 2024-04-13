@@ -18,80 +18,35 @@
 clear
 clc
 
-%% PAYLOAD PARAMETERS
-PayloadInputs.crewnum    = 8;              % number of crew members (pilots)
-PayloadInputs.paxweight  = 200;            % passenger weight (including luggage) [lbs]
-PayloadInputs.crewweight = 300;            % crew member weight (including luggage) [lbs]
-
-%% DESIGN MISSION PARAMETERS
-DesignInputs.R           = 2500;           % aircraft range [nmi]
-DesignInputs.loiter_time = 0.5;            % loiter time [hours]
-DesignInputs.pax         = 0;              % number of passengers   
-DesignInputs.loadweight  = 430000;         % weight of load carried in mission
-paxweight  = PayloadInputs.paxweight.*DesignInputs.pax;      % weight of passengers (including luggage) [lbs]
-crewweight = PayloadInputs.crewweight*PayloadInputs.crewnum;  % weight of crew members [lbs]
-DesignInputs.w_payload  = crewweight + paxweight + DesignInputs.loadweight;
-
-%% MEDIUM PAYLOAD MISSION PARAMETERS
-MediumInputs.R           = 5000 ;    % aircraft range [nmi]
-MediumInputs.loiter_time = 0.5;   % loiter time [hours]
-MediumInputs.pax         = 0;      % number of passengers   
-MediumInputs.loadweight  = 295000; % weight of load carried in mission
-paxweight  = PayloadInputs.paxweight.*DesignInputs.pax;      % weight of passengers (including luggage) [lbs]
-crewweight = PayloadInputs.crewweight*PayloadInputs.crewnum;  % weight of crew members [lbs]
-MediumInputs.w_payload  = crewweight + paxweight + MediumInputs.loadweight;
-
-%% FERRY MISSION PARAMETERS
-FerryInputs.R           = 8000;    % aircraft range [nmi]
-FerryInputs.loiter_time = 0.5;   % loiter time [hours]
-FerryInputs.pax         = 0;      % number of passengers   
-FerryInputs.loadweight  = 0; % weight of load carried in mission
-paxweight  = PayloadInputs.paxweight.*DesignInputs.pax;      % weight of passengers (including luggage) [lbs]
-crewweight = PayloadInputs.crewweight*PayloadInputs.crewnum;  % weight of crew members [lbs]
-FerryInputs.w_payload  = crewweight + paxweight + FerryInputs.loadweight;
-
 %% AGGREGATED INPUTS FOR AIRCRAFT SIZING
 inputs = AircraftParameters();
-inputs.DesignInputs      = DesignInputs;
-inputs.MediumInputs      = MediumInputs;
-inputs.FerryInputs       = FerryInputs;
-inputs.PayloadInputs     = PayloadInputs;
 
 %% DETERMINE HEAVIEST STRUCTURE WEIGHT
-    % inputs.WS=0;
-    DesignOutput = DesignMissionFunction(inputs);
-    MediumOutput = MediumMissionFunction(inputs);
-    FerryOutput = FerryMissionFunction(inputs);
-
-    if DesignOutput.EmptyWeight.We > MediumOutput.EmptyWeight.We
-        if DesignOutput.EmptyWeight.We > FerryOutput.EmptyWeight.We
-            inputs.EmptyWeight = DesignOutput.EmptyWeight;
-            inputs.GeometryOutput = DesignOutput.GeometryOutput;
-        else
-            inputs.EmptyWeight = FerryOutput.EmptyWeight;
-            inputs.GeometryOutput = FerryOutput.GeometryOutput;
-        end
-    else
-        if MediumOutput.EmptyWeight.We > FerryOutput.EmptyWeight.We
-            inputs.EmptyWeight = MediumOutput.EmptyWeight;
-            inputs.GeometryOutput = MediumOutput.GeometryOutput;
-        else
-            inputs.EmptyWeight = FerryOutput.EmptyWeight;
-            inputs.GeometryOutput = FerryOutput.GeometryOutput;
+    missionnames = fieldnames(inputs.Missions);
+    inputs.Missionoutputs.temp = false;
+    maxTOGW = 0;
+    for i=1:size(missionnames,1)
+        inputs.MissionInputs  = getfield(inputs.Missions, missionnames{i});
+        inputs.Missionoutputs = setfield(inputs.Missionoutputs, missionnames{i}, MissionFunction(inputs));
+        Wmat = getfield(inputs.Missionoutputs, missionnames{i}).Wmat;
+        if (Wmat(1)>maxTOGW)
+            maxTOGW = Wmat(1);
+            maxindex = i;
         end
     end
+    inputs.Missionoutputs = rmfield(inputs.Missionoutputs, "temp");
+    
+    inputs.EmptyWeight = getfield(inputs.Missionoutputs, missionnames{maxindex}).EmptyWeight;
+    inputs.GeometryOutput = getfield(inputs.Missionoutputs, missionnames{maxindex}).GeometryOutput;
 
-%% SIZE AIRCRAFT
-   DesignOutput = DesignMissionFunction(inputs);
+    for i=1:size(missionnames,1)
+        inputs.MissionInputs  = getfield(inputs.Missions, missionnames{i});
+        inputs.Missionoutputs = setfield(inputs.Missionoutputs, missionnames{i}, MissionFunction(inputs));
+    end
 
-%% MEDIUM PAYLOAD MISSION ANALYSIS
-   MediumOutput = MediumMissionFunction(DesignOutput);
 
-%% FERRY MISSION ANALYSIS
-   FerryOutput = FerryMissionFunction(MediumOutput);
-   
 %% PERFORMANCE ANALYSIS
-   PerformanceFunction(FerryOutput);
+   %PerformanceFunction(inputs);
    
 %% ACQUISITION COST ANALYSIS
 %    AqCostOutput = AcquisitionCostFunction(SizingOutput);
@@ -100,11 +55,11 @@ inputs.PayloadInputs     = PayloadInputs;
 %    OpCostOutput = OperatingCostFunction(SizingOutput,AqCostOutput,EconMissionOutput);
   
 %% DISPLAY RESULTS
-   FinalOutput              = FerryOutput;
+   % FinalOutput              = FerryOutput;
 %    FinalOutput.AqCostOutput = AqCostOutput;
 %    FinalOutput.OpCostOutput = OpCostOutput;
-   ReportFunction(FinalOutput);
+   ReportFunction(inputs);
 
-   PayloadRange(FinalOutput)
+   PayloadRange(inputs);
 
-   Vndiagram(FinalOutput)
+   Vndiagram(inputs)
