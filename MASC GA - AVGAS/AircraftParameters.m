@@ -40,8 +40,40 @@ PropulsionInputs.num_eng   = 6;          % number of engines
 PropulsionInputs.C         = 0.5;        % Jet specific fuel consumption [1/hr] 
 PropulsionInputs.lapse     = 0.25;       % lapse rate of engines at cruise
 
+%% PAYLOAD PARAMETERS
+PayloadInputs.crewnum    = 8;              % number of crew members (pilots)
+PayloadInputs.paxweight  = 200;            % passenger weight (including luggage) [lbs]
+PayloadInputs.crewweight = 300;            % crew member weight (including luggage) [lbs]
+PayloadInputs.crewpayload = PayloadInputs.crewweight*PayloadInputs.crewnum;  % weight of crew members [lbs]
+
+%% DESIGN MISSION PARAMETERS
+Missions.Design.R           = 2500;           % aircraft range [nmi]
+Missions.Design.loiter_time = 0.5;            % loiter time [hours]
+Missions.Design.pax         = 0;              % number of passengers   
+Missions.Design.loadweight  = 430000;         % weight of load carried in mission
+Missions.Design.paxpayload  = PayloadInputs.paxweight.*Missions.Design.pax;      % weight of passengers (including luggage) [lbs]
+Missions.Design.w_payload   = PayloadInputs.crewweight + Missions.Design.paxpayload + Missions.Design.loadweight;
+
+%% MEDIUM PAYLOAD MISSION PARAMETERS
+Missions.Medium.R           = 5000 ;    % aircraft range [nmi]
+Missions.Medium.loiter_time = 0.5;   % loiter time [hours]
+Missions.Medium.pax         = 0;      % number of passengers   
+Missions.Medium.loadweight  = 295000; % weight of load carried in mission
+Missions.Medium.paxpayload  = PayloadInputs.paxweight.*Missions.Medium.pax;      % weight of passengers (including luggage) [lbs]
+Missions.Medium.w_payload   = PayloadInputs.crewweight + Missions.Medium.paxpayload + Missions.Medium.loadweight;
+
+%% FERRY MISSION PARAMETERS
+Missions.Ferry.R           = 8000;    % aircraft range [nmi]
+Missions.Ferry.loiter_time = 0.5;   % loiter time [hours]
+Missions.Ferry.pax         = 0;      % number of passengers   
+Missions.Ferry.loadweight  = 0; % weight of load carried in mission
+Missions.Ferry.paxpayload  = PayloadInputs.paxweight.*Missions.Ferry.pax;      % weight of passengers (including luggage) [lbs]
+Missions.Ferry.w_payload  = PayloadInputs.crewweight + Missions.Ferry.paxpayload + Missions.Ferry.loadweight;
+
 inputs.PerformanceInputs   = PerformanceInputs;
 inputs.GeometryInputs      = GeometryInputs;
 inputs.LayoutInputs        = LayoutInputs;
 inputs.AeroInputs          = AeroInputs;
 inputs.PropulsionInputs    = PropulsionInputs;
+inputs.Missions            = Missions;
+inputs.PayloadInputs       = PayloadInputs;
