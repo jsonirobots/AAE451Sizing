@@ -11,7 +11,9 @@ Mmax = inputs.PerformanceInputs.Mmax;
 WS = inputs.PerformanceInputs.WS;
 Sw = inputs.GeometryOutput.Sw;
 b = inputs.GeometryInputs.b;
-W2overW0 = inputs.W2overW0;
+
+missionnames = fieldnames(inputs.Missions);
+Wmat = getfield(inputs.Missionoutputs, missionnames{1}).Wmat;
 
 [a_cruise,mu_cruise,rho_cruise] = AtmosphereFunction(hc);
 [a_sl,mu_sl,rho_sl] = AtmosphereFunction(0);
@@ -20,7 +22,7 @@ Vcruise = a_cruise*Mcruise;
 Vmax = a_cruise*Mmax;
 V_stall_upper = sqrt(2/rho_sl*WS/CLmax);
 V_stall_lower = sqrt(2/rho_sl*WS/abs(CLmin));
-V_stall_cruise = sqrt(2*WS*W2overW0/rho_cruise/CLmaxcruise);
+V_stall_cruise = sqrt(2*WS*(Wmat(3)/Wmat(1))/rho_cruise/CLmaxcruise);
 
 Vrange = linspace(Vmin, Vmax*1.1, 100000);
 
