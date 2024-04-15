@@ -1,52 +1,36 @@
 function PerformanceFunction(inputs)
+
   steps = 500;
-  WSrange=linspace(90,200,steps);
   carpetWSvariance = 0.2;
   carpetTWvariance = 0.2;
   skewOffset = 4;
-  skewcenter = [0,0];
+  skewcenter = [-1,-1];
 
-% Comptue takeoff lift coefficient (assumes Clmax is 1.2 times the takeoff lift coefficient 
-  Cl_to   = inputs.AeroInputs.Clmax/1.2; 
-  Cl_land = inputs.AeroInputs.Clmax;
-  WFcruise = inputs.W2overW0;
-  lapse = inputs.PropulsionInputs.lapse;
-  V  = inputs.PerformanceInputs.V;            % Velocity [knots]
-  h  = inputs.PerformanceInputs.hc;            % Altitude [ft]
-  WS = inputs.PerformanceInputs.WS;
-  AR = inputs.GeometryOutput.AR;
-  nmax = inputs.PerformanceInputs.nmax;
-  num_eng = inputs.PropulsionInputs.num_eng;           % number of engines
-
-  if num_eng==2
-    takeoff_parameter = (9+12759/73945)*160750/6693;
-  elseif num_eng==4
-    takeoff_parameter = (9-1129/20585)*1029250/35793;
-  elseif num_eng==6
-    takeoff_parameter = (9-747151/2647231)*661807750/18474717;
-  else
-    fprintf("Number of engines is not supported\n")
-  end
-  TWto = WSrange/takeoff_parameter/Cl_to;
-
-  WSland = Cl_land/0.85/80*(9000-1000);
+  WSrange=linspace(105,200,steps);
+  constraintInputs = inputs;
+  constraintInputs = rmfield(constraintInputs, "EmptyWeight");
+  constraintInputs = rmfield(constraintInputs, "GeometryOutput");
+  constraintInputs = rmfield(constraintInputs, "Missionoutputs");
   
-  [~,~,rho] = AtmosphereFunction(h);
-  v = V*1.68781;
-  q = 0.5*rho*v^2;
-  Cdo = ParasiteDragFunction(inputs);
-  oswaldInputs = inputs;
-  oswaldInputs.Aero.Cdo = Cdo;
-  e0 = OswaldEfficiency(oswaldInputs);
-  TWtoc = WFcruise/lapse*(q/WFcruise*(Cdo./WSrange+WSrange./pi./AR./e0*(WFcruise/q)^2)+100/60/v);
-  
-  TWmax=max([TWto,TWtoc]);
-  TWmin=min([TWto,TWtoc]);
+  landingConstraint = LandConstraintSizing(constraintInputs);
+
+  constraintInputs.PerformanceInputs.WS = WSrange;
+
+  takeoffConstraint = TakeoffConstraintSizing(constraintInputs);
+  topOfClimbConstraint = TopOfClimbConstraintSizing(constraintInputs);
+
+  missionnames = fieldnames(inputs.Missions);
+  TWtakeoff = getfield(takeoffConstraint.Missionoutputs, missionnames{1}).PerformanceInputs.TW;
+  TWtopOfClimb = getfield(topOfClimbConstraint.Missionoutputs, missionnames{1}).PerformanceInputs.TW;
+  WSland = getfield(landingConstraint.Missionoutputs, missionnames{1}).PerformanceInputs.WS;
+
+  TWmax=max([TWtakeoff,TWtopOfClimb]);
+  TWmin=min([TWtakeoff,TWtopOfClimb]);
 
   figure(1)
-  plot(WSrange, TWto)
+  plot(WSrange, TWtakeoff)
   hold on
-  plot(WSrange, TWtoc)
+  plot(WSrange, TWtopOfClimb)
   plot([WSland,WSland],[TWmin,TWmax])
   hold off
   grid on
@@ -56,19 +40,20 @@ function PerformanceFunction(inputs)
 
   centerTW = inputs.PerformanceInputs.TW;
   centerWS = inputs.PerformanceInputs.WS;
-  inputs = rmfield(inputs, "EmptyWeight");
 
-  inputs.PerformanceInputs.TW = TWto;
-  inputs.PerformanceInputs.WS = WSrange;
-  W0to = GeneralSizingFunction(inputs);
+  W0takeoff=zeros(size(WSrange));
+  W0topOfClimb=zeros(size(WSrange));
 
-  inputs.PerformanceInputs.TW = TWtoc;
-  inputs.PerformanceInputs.WS = WSrange;
-  W0toc = GeneralSizingFunction(inputs);
+  for i=1:size(missionnames,1)
+    W0takeofftemp = getfield(takeoffConstraint.Missionoutputs, missionnames{i}).Wmat(1,:);
+    W0takeoff = W0takeofftemp.*(W0takeofftemp>W0takeoff) + W0takeoff.*(W0takeofftemp<=W0takeoff);
 
-  inputs.PerformanceInputs.TW = linspace(TWmin, TWmax, steps);
-  inputs.PerformanceInputs.WS = WSland*ones(1,steps);
-  W0land = GeneralSizingFunction(inputs);
+    W0topOfClimbtemp = getfield(topOfClimbConstraint.Missionoutputs, missionnames{i}).Wmat(1,:);
+    W0topOfClimb = W0topOfClimbtemp.*(W0topOfClimbtemp>W0topOfClimb) + W0topOfClimb.*(W0topOfClimbtemp<=W0topOfClimb);
+  end
+
+  W0max=max([W0takeoff,W0topOfClimb]);
+  W0min=min([W0takeoff,W0topOfClimb]);
 
   linspaceRangeOffset = mod(steps,2)-1;
   TWstep = centerTW * carpetTWvariance;
@@ -81,42 +66,42 @@ function PerformanceFunction(inputs)
   inputs.PerformanceInputs.TW = linspace(TWmin, TWmax, steps+linspaceRangeOffset);
   inputs.PerformanceInputs.WS = WSmax;
   WSWSp = WSmax * ones(1, steps+linspaceRangeOffset);
-  W0WSp = GeneralSizingFunction(inputs);
+  W0WSp = GeneralSizing(inputs);
 
   inputs.PerformanceInputs.TW = linspace(TWmin, TWmax, steps+linspaceRangeOffset);
   inputs.PerformanceInputs.WS = centerWS;
   WSWSc = centerWS * ones(1, steps+linspaceRangeOffset);
-  W0WSc = GeneralSizingFunction(inputs);
+  W0WSc = GeneralSizing(inputs);
 
   inputs.PerformanceInputs.TW = linspace(TWmin, TWmax, steps+linspaceRangeOffset);
   inputs.PerformanceInputs.WS = WSmin;
   WSWSm = WSmin * ones(1, steps+linspaceRangeOffset);
-  W0WSm = GeneralSizingFunction(inputs);
+  W0WSm = GeneralSizing(inputs);
 
   inputs.PerformanceInputs.TW = TWmax;
   inputs.PerformanceInputs.WS = linspace(WSmin, WSmax, steps+linspaceRangeOffset);
   WSTWp = inputs.PerformanceInputs.WS;
-  W0TWp = GeneralSizingFunction(inputs);
+  W0TWp = GeneralSizing(inputs);
 
   inputs.PerformanceInputs.TW = centerTW;
   inputs.PerformanceInputs.WS = linspace(WSmin, WSmax, steps+linspaceRangeOffset);
   WSTWc = inputs.PerformanceInputs.WS;
-  W0TWc = GeneralSizingFunction(inputs);
+  W0TWc = GeneralSizing(inputs);
+
 
   inputs.PerformanceInputs.TW = TWmin;
   inputs.PerformanceInputs.WS = linspace(WSmin, WSmax, steps+linspaceRangeOffset);
   WSTWm = inputs.PerformanceInputs.WS;
-  W0TWm = GeneralSizingFunction(inputs);
+  W0TWm = GeneralSizing(inputs);
 
   WSint = [WSmax, centerWS, WSmin, WSmax, centerWS, WSmin, WSmax, centerWS, WSmin];
   W0int = [W0TWp(end), W0TWp(steps/2), W0TWp(1), W0TWc(end), W0TWc(steps/2), W0TWc(1), W0TWm(end), W0TWm(steps/2), W0TWm(1)];
-  % WSTWp(steps/2)
 
   figure(2)
-  plot(WSrange, W0to)
+  plot(WSrange, W0takeoff)
   hold on
-  plot(WSrange, W0toc)
-  plot(WSland*ones(steps), W0land)
+  plot(WSrange, W0topOfClimb)
+  plot([WSland, WSland], [W0max, W0min])
 
   plot(WSWSp, W0WSp)
   plot(WSWSc, W0WSc)
@@ -137,15 +122,17 @@ function PerformanceFunction(inputs)
       offset = -skewOffset;
   elseif skewcenter(2) == 1
       offset = -2*skewOffset;
+  else
+      offset = 0;
   end
 
 
 
   figure(3)
-  plot(WSrange, W0to)
+  plot(WSrange, W0takeoff)
   hold on
-  plot(WSrange, W0toc)
-  plot(WSland*ones(steps), W0land)
+  plot(WSrange, W0topOfClimb)
+  plot([WSland, WSland], [W0max, W0min])
 
   ws = warning('off','all');
   coeffs = polyfit([W0TWm(end), W0TWc(end), W0TWp(end)], [offset, skewOffset + offset, 2*skewOffset + offset], 2);
@@ -172,8 +159,8 @@ function PerformanceFunction(inputs)
   xlabel("Wing Loading (lb/ft^2)")
   ylabel("Takeoff Weight (lbs)")
   title("Carpet Plot Skewed")
-
-
-  
-%% See Raymer Ch. 17 to comptue other performance characteristics
-%% See Raymer Ch. 16 to compute control and stability performance
+% 
+% 
+% 
+% %% See Raymer Ch. 17 to comptue other performance characteristics
+% %% See Raymer Ch. 16 to compute control and stability performance

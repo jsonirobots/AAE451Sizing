@@ -46,7 +46,7 @@ inputs = AircraftParameters();
 
 
 %% PERFORMANCE ANALYSIS
-   %PerformanceFunction(inputs);
+   PerformanceFunction(inputs);
    
 %% ACQUISITION COST ANALYSIS
 %    AqCostOutput = AcquisitionCostFunction(SizingOutput);
